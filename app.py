@@ -1,37 +1,40 @@
 from numerize import numerize
-from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
-import hashlib
 
-#Creating an object for the flask called app
-app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+play=True
+playernames=[]
 
 #Connect with the customers database to store the user details
 def connect_db():
     connection = sqlite3.connect('gamedetails.db')
     return connection
 
-#rendering the landing or the home page
-@app.route('/')
-def index():
-    return render_template("index.html")
-
-@app.route('/create', methods=['GET', 'POST'])
-def create():
-    if request.method == 'POST':
-        num_players = int(request.form['myDropdown'])
-        money=2000000
-        conn = sqlite3.connect('gamedetails.db')
-        cursor = conn.cursor()
-        player_name = "aa"
-        print(player_name)
-        cursor.execute("INSERT INTO players (id,name,current_money) VALUES (?, ?, ?)", (1,player_name,money))
-        conn.commit()
-        conn.close()
-
-    return redirect('/')
+def newgame():
+    print("-------------------------------------------------------------------------------------------------")
+    print("-----------------------------------------NEW GAME------------------------------------------------")
+    n=int(input("Enter number of players:"))
+    for i in range(1,n+1):
+        print("Enter the name of Player",i,end='')
+        temp_name=input()
+        playernames.append(temp_name)
+        print("\n")
+    print(playernames)
+    
+    
+    
+    
+    print("-------------------------------------------------------------------------------------------------")
+    
 
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0")
+
+
+
+while(play!=False):
+    print("------------------------------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------------")
+    print("---------------------------WELCOME TO GAME MANAGER OF MONOPOLY----------------------------------")
+    print("1.NEW GAME\n2.ABOUT\n3.HOW TO MANAGE\n4.EXIT")
+    ch=int(input("ENTER YOUR CHOICE:"))
+    if(ch==1):
+        newgame()
