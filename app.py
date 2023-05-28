@@ -17,6 +17,20 @@ def connect_db():
 def index():
     return render_template("index.html")
 
+@app.route('/create', methods=['GET', 'POST'])
+def create():
+    if request.method == 'POST':
+        num_players = int(request.form['myDropdown'])
+        money=2000000
+        conn = sqlite3.connect('gamedetails.db')
+        cursor = conn.cursor()
+        player_name = "aa"
+        print(player_name)
+        cursor.execute("INSERT INTO players (id,name,current_money) VALUES (?, ?, ?)", (1,player_name,money))
+        conn.commit()
+        conn.close()
+
+    return redirect('/')
 
 
 if __name__ == '__main__':
