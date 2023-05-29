@@ -6,9 +6,10 @@ cursor = conn.cursor()
 
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS players (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    current_money INTEGER
+    current_money INTEGER,
+    game_name TEXT
 )
 ''')
 conn.commit()
