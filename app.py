@@ -54,54 +54,84 @@ def checkgamename(name):
             return checkgamename(gname)
         else:
             print("Game Created :)")
-            print(gname)
+            #print(gname)
             return gname
     
 
 def newgame():
+    def startgame(gname):
+        p=True
+        while(p!=False):
+            print("------------------------------------------------------------------------------------------------")
+            print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
+            print(" 1:Pay Rent\n 2:Pay The Government or Bank\n 3: Buy an Property or Utility\n4:Build an House/Hotel \n5:End the Game and give the winner\n")
+            ch=int(input("ENTER ACTION TO BE DONE:"))
+            if(ch==1):
+                payer=int(input("Enter the Player number whom has to pay the rent: "))
+                siteno=int(input("Enter the site number of the property:"))
+                con=connect_db()
+                cursor=con.cursor()
+                cursor.execute("SELECT current_rent FROM cities WHERE id = ?",(siteno,))
+                n=cursor.fetchone()
+
+
+                con.commit()
+                con.close()
+            elif(ch==2):
+                pass
+            elif(ch==3):
+                pass
+            elif(ch==4):
+                pass
+            elif(ch==5):
+                pass
+            else:
+                print("Invalid Choice!..Please try again")
+        
     print("-------------------------------------------------------------------------------------------------")
     print("-----------------------------------------NEW GAME------------------------------------------------")
     n=int(input("Enter number of players:"))
     money=2000000
     name=''
     gamename=checkgamename(name)
-    print(gamename)    
+    #print(gamename)    
     for i in range(1,n+1):
         print("Enter the name of Player",i,end=' ')
         temp_name=input()
+        p_no=int(input("Enter an number for this player:"))
         try:
             con=connect_db()
             cursor=con.cursor()
-            cursor.execute("INSERT INTO players (name, current_money,game_name) VALUES (?, ?, ?)", (temp_name,money,gamename))
+            cursor.execute("INSERT INTO players (id,name, current_money,game_name) VALUES (?, ?, ?, ?)", (p_no,temp_name,money,gamename))
             con.commit()
             con.close()
         except:
             err_message="error updating the database"
             print("------------------------------------------------------------------------------------------------")
             print(err_message)
-    
-    
-    
-    
-    print("-------------------------------------------------------------------------------------------------")
-    
+    startgame(gamename)
 
-def continuegame():
-    pass
-
+def exitgame():
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("DELETE FROM players")
+    n=cursor.fetchone()
+    con.commit()
+    con.close()
+    exit()
 
 while(play!=False):
     print("------------------------------------------------------------------------------------------------")
     print("---------------------------WELCOME TO GAME MANAGER OF MONOPOLY----------------------------------")
-    print("1.NEW GAME\n2.CONTINUE GAME\n3.DELETE SAVED GAME\n4.EXIT")
+    print("1.NEW GAME\n2.EXIT")
     ch=int(input("ENTER YOUR CHOICE:"))
     if(ch==1):
         newgame()
     elif(ch==2):
-        continuegame()  
-    elif(ch==3):
-        print("Under construction!!!")
-    elif(ch==4):
-        exit(0)
+        k=int(input("The Game will be deleted!Are you sure?\n1.Yes\n2.No\n"))
+        if(k==1):
+            exitgame()  
+        else:
+            pass
     else:
         print("Invalid Choice!..Please try again")
