@@ -35,7 +35,7 @@ def startgame(gname):
     while(p!=False):
         print("------------------------------------------------------------------------------------------------")
         print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
-        print(" 1:Pay Propertity Rent\n 2:Pay Utility Rent\n 3: Buy an Property or Utility\n4:Build an House/Hotel \n5:End the Game and give the winner\n")
+        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an House/Hotel \n4:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==1):
             p_type=int(input("Enter the type of the Property:\n1.SITE\2.Utitility\n3.Railways\n"))
@@ -114,9 +114,7 @@ def startgame(gname):
             else:
                 print("Invalid choice!!.")
         elif(ch==2):
-           pass
-        elif(ch==3):
-            p_type=int(input("Enter the type of the Property:\n1.SITE\2.Utitility\n3.Railways\n"))
+            p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
             if(p_type>=1 and p_type<=3):
                 buyer=int(input("Enter the player number who wants to buy: "))
                 siteno=int(input("Enter the id number of the property:"))
@@ -185,9 +183,10 @@ def startgame(gname):
             else: 
                 print("INVALID CHOICE!!")
             
+        elif(ch==3):
+            buyer=int(input("Enter the player number who wants to buy: "))
+            siteno=int(input("Enter the id number of the property:"))
         elif(ch==4):
-            pass
-        elif(ch==5):
             pass
         else:
             print("Invalid Choice!..Please try again")
@@ -225,8 +224,21 @@ def deletegame():
     cursor.execute("DELETE FROM players")
     up1 = "UPDATE cities SET Owner = 'bank'"
     cursor.execute(up1)
-    up2 = "UPDATE cities SET current_rent = 'rent'"
+    
+    up2 = "UPDATE utilities SET Owner = 'bank'"
     cursor.execute(up2)
+    
+    up3 = "UPDATE trains SET Owner = 'bank'"
+    cursor.execute(up3)
+
+    up4 = "UPDATE trains SET current_rate = 'rent_1T'"
+    cursor.execute(up4)
+    
+    up5 = "UPDATE cities SET current_rent = 'rent'"
+    cursor.execute(up5)
+    
+    up6 = "UPDATE utilities SET current_rent = 'rent_multiplier_1'"
+    cursor.execute(up6)
     con.commit()
     print("The Saved game is sucessfully deleted!!")
     con.close()
