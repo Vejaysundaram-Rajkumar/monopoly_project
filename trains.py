@@ -14,16 +14,18 @@ CREATE TABLE IF NOT EXISTS trains (
     rent_1T INTEGER,
     rent_2T INTEGER,
     rent_3T INTEGER,
-    rent_4T INTEGER
+    rent_4T INTEGER,
+    Owner TEXT,
+    current_rate TEXT
 )
 ''')
 cursor.execute('''
-INSERT INTO trains (id, name, group_id, purchase_price, mortgage_value, rent_1T, rent_2T, rent_3T, rent_4T)
+INSERT INTO trains (id, name, group_id, purchase_price, mortgage_value, rent_1T, rent_2T, rent_3T, rent_4T,Owner,current_rate)
 VALUES 
-    (1, 'Marylebone Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000),
-    (2, 'King Cross Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000),
-    (3, 'Liverpool Street Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000),
-    (4, 'Fenchurch Street Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000)
+    (1, 'Marylebone Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000,'bank','rent_1T'),
+    (2, 'King Cross Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000,'bank','rent_1T'),
+    (3, 'Liverpool Street Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000,'bank','rent_1T'),
+    (4, 'Fenchurch Street Station', 10, 2000000, 1000000, 250000, 500000, 1000000, 2000000,'bank','rent_1T')
     ''')
 
 conn.commit()
