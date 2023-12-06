@@ -488,14 +488,11 @@ while(play!=False):
     print("1.NEW GAME\n2.Continue Game\n3.Exit game")
     ch=int(input("ENTER YOUR CHOICE:"))
     if(ch==1):
-        if(result[0]==0):
-            print("PREVIOUS GAME NOT COMPLETED YET DO YOU WANT TO CREATE A NEW GAME AND DELETE THE EXISISTING ONE?\n1.YES\n2.NO")
-            q=int(input())
-            if(q==1):
-                deletegame()
-                newgame()
-            elif(q==2):
-                pass
+        if(result[0]==1):
+            print("LAST SAVED RESULT IS:\n")
+            result_func()
+            deletegame()
+            newgame()
         else:
             deletegame()
             newgame()
