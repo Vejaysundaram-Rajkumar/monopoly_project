@@ -29,13 +29,28 @@ def checkgamename(name):
             #print(gname)
             return gname
 
+def utility_rent_check():
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("SELECT Owner, COUNT(*) FROM utilities GROUP BY Owner")
+    count=cursor.fetchall()
+    print(count)
+
+def trains_rent_check():
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("SELECT Owner, COUNT(*) FROM trains GROUP BY Owner")
+    count=cursor.fetchall()
+    print(count)
+
+
 #Starting an new game
 def startgame(gname):
     p=True
     while(p!=False):
         print("------------------------------------------------------------------------------------------------")
         print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
-        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an House \n4:End the Game and give the winner\n")
+        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an House \n4:Build an Hotel\n5:End the Game and give the winner")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==1):
             p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
@@ -170,11 +185,13 @@ def startgame(gname):
                             val3 = (owner_name[0],siteno)
                             cursor.execute(up2, val3)
                             con.commit()
+                            utility_rent_check()
                         elif(p_type==3):
                             up2 = "UPDATE trains SET Owner = ? WHERE id = ?"
                             val3 = (owner_name[0],siteno)
                             cursor.execute(up2, val3)
-                            con.commit()            
+                            con.commit()        
+                            trains_rent_check()    
                     else:
                         print("Insufficient balance for the player!!")
                         con.close()
@@ -245,9 +262,12 @@ def startgame(gname):
 
         elif(ch==4):
             pass
+        elif(ch==5):
+            trains_rent_check()
+            utility_rent_check()
+            exit()
         else:
             print("Invalid Choice!..Please try again")
-
 
 
 #creating an new game 
