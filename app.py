@@ -32,18 +32,40 @@ def checkgamename(name):
 def utility_rent_check():
     con=connect_db()
     cursor=con.cursor()
-    cursor.execute("SELECT Owner, COUNT(*) FROM utilities GROUP BY Owner")
-    count=cursor.fetchall()
-    print(count)
+    # Identify players with more than 1 utility
+    cursor.execute("SELECT p.id, COUNT(u.id) as utility_count FROM players p LEFT JOIN utilities u ON p.name = u.Owner WHERE u.Owner != 'bank' GROUP BY p.id HAVING utility_count > 1")
+
+    # Fetch the player IDs and utility counts
+    player_utility_counts = cursor.fetchall()
+
+    # Update current_rent for each player based on the utility count
+    for player_info in player_utility_counts:
+        player_id, utility_count = player_info
+        if utility_count == 2:
+            cursor.execute("UPDATE utilities SET current_rent = 'rent_multiplier_2' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+        else:
+            cursor.execute("UPDATE utilities SET current_rent = 'rent_multiplier_1' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+        con.commit()
 
 def trains_rent_check():
     con=connect_db()
     cursor=con.cursor()
-    cursor.execute("SELECT Owner, COUNT(*) FROM trains GROUP BY Owner")
-    count=cursor.fetchall()
-    print(count)
+    # Identify players with more than 1 train station
+    cursor.execute("SELECT p.id, COUNT(t.id) as station_count FROM players p LEFT JOIN trains t ON p.name = t.Owner WHERE t.Owner != 'bank' GROUP BY p.id HAVING station_count > 1")
 
-
+    # Fetch the player IDs and station counts
+    player_station_counts = cursor.fetchall()
+    print(player_station_counts)
+    # Update current_rate for each player based on the station count
+    for player_info in player_station_counts:
+        player_id, station_count = player_info
+        if station_count == 2:
+            cursor.execute("UPDATE trains SET current_rate = 'rent_2T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+        elif station_count == 3:
+            cursor.execute("UPDATE trains SET current_rate = 'rent_3T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+        elif station_count == 4:
+            cursor.execute("UPDATE trains SET current_rate = 'rent_4T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+        con.commit()
 #Starting an new game
 def startgame(gname):
     p=True
@@ -208,7 +230,7 @@ def startgame(gname):
             #get the current rent bracket 
             cursor.execute("SELECT current_rent FROM cities WHERE id = ?",(siteno,))
             rent_set=cursor.fetchone()
-            print(rent_set)
+            #print(rent_set)
             #Finding the owner of the property  
             cursor.execute("SELECT Owner FROM cities WHERE id = ?",(siteno,))
             owner=cursor.fetchone()
@@ -275,7 +297,7 @@ def newgame():
     print("-------------------------------------------------------------------------------------------------")
     print("-----------------------------------------NEW GAME------------------------------------------------")
     n=int(input("Enter number of players:"))
-    money=2000000
+    money=8000000
     name=''
     gamename=checkgamename(name)
     #print(gamename)    
