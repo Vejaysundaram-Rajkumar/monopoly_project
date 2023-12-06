@@ -518,7 +518,7 @@ while(play!=False):
     result = cursor.fetchone()
     print("------------------------------------------------------------------------------------------------")
     print("---------------------------WELCOME TO GAME MANAGER OF MONOPOLY----------------------------------")
-    print("1.NEW GAME\n2.Continue Game\n3.Exit game")
+    print("1.New Game\n2.Continue Game\n3.Delete the Saved game\n4.Exit Game")
     ch=int(input("ENTER YOUR CHOICE:"))
     if(ch==1):
         if(result[0]==1):
@@ -545,6 +545,8 @@ while(play!=False):
         else:
             continue_game()
     elif(ch==3):
+        deletegame()
+    elif(ch==4):
         exit()
     else:
         print("Invalid Choice!..Please try again")
