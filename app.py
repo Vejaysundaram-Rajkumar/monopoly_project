@@ -1,9 +1,9 @@
 from numerize import numerize
 import sqlite3
-
+import locale
+locale.setlocale(locale.LC_MONETARY, 'en_IN')
 play=True
 playernames=[]
-
 #Connect with the customers database to store the user details
 def connect_db():
     connection = sqlite3.connect('gamedetails.db')
@@ -66,6 +66,68 @@ def trains_rent_check():
         elif station_count == 4:
             cursor.execute("UPDATE trains SET current_rate = 'rent_4T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
         con.commit()
+
+#printing the results of the game 
+def result_func():
+    con=connect_db()
+    cursor=con.cursor()
+    # Calculate net worth for each player
+    cursor.execute("""
+        SELECT
+            p.id,
+            p.name,
+            p.current_money,
+            COALESCE(SUM(CASE
+                            WHEN c.current_rent = 'rent_H1' THEN house_cost
+                            WHEN c.current_rent = 'rent_H2' THEN 2 * house_cost
+                            WHEN c.current_rent = 'rent_H3' THEN 3 * house_cost
+                            WHEN c.current_rent = 'rent_H4' THEN 4 * house_cost + hotel_cost
+                            WHEN c.current_rent = 'rent_Hotel' THEN 4 * house_cost + hotel_cost
+                            ELSE 0
+                        END), 0) AS houses_and_hotels_cost,
+            COALESCE(SUM(CASE WHEN c.Owner != 'bank' THEN c.buy_cost ELSE 0 END), 0) AS sites_cost,
+            COALESCE(SUM(CASE WHEN t.Owner != 'bank' THEN t.purchase_price ELSE 0 END), 0) AS trains_cost,
+            COALESCE(SUM(CASE WHEN u.Owner != 'bank' THEN u.purchase_price ELSE 0 END), 0) AS utilities_cost
+        FROM
+            players p
+        LEFT JOIN
+            cities c ON p.name = c.Owner
+        LEFT JOIN
+            trains t ON p.name = t.Owner
+        LEFT JOIN
+            utilities u ON p.name = u.Owner
+        GROUP BY
+            p.id, p.name, p.current_money
+    """)
+
+    # Fetch player information
+    player_info = cursor.fetchall()
+
+    # Calculate and print net worth for each player
+    net_worths = []
+    for player in player_info:
+        player_id, player_name, current_money, houses_and_hotels_cost, sites_cost, trains_cost, utilities_cost = player
+        net_worth = current_money + houses_and_hotels_cost + sites_cost + trains_cost + utilities_cost
+        net_worths.append((player_id, player_name, net_worth))
+
+    # Sort players by net worth
+    net_worths.sort(key=lambda x: x[2], reverse=True)
+
+    # Print the leaderboard
+    print("Leaderboard:")
+    print("Player Rank | Player Name | Net Worth")
+    for i, (player_id, player_name, net_worth) in enumerate(net_worths, 1):
+        print(f"{i:10} | {player_name:11} | {locale.currency(net_worth, grouping=True)}")
+
+    # Declare the winner and runner
+    if len(net_worths) >= 1:
+        winner_id, winner_name, winner_net_worth = net_worths[0]
+        print(f"\nWinner: Player {winner_name} (ID: {winner_id}) - Net Worth: {locale.currency(winner_net_worth, grouping=True)}")
+
+    if len(net_worths) >= 2:
+        runner_id, runner_name, runner_net_worth = net_worths[1]
+        print(f"Runner-up: Player {runner_name} (ID: {runner_id}) - Net Worth: {locale.currency(runner_net_worth, grouping=True)}")
+
 #Starting an new game
 def startgame(gname):
     p=True
@@ -106,14 +168,13 @@ def startgame(gname):
                     elif(p_type==2):
                         diceroll=int(input("Enter the number displayed on your dice: "))
                         #current multiplyer bracket is found here from the database
-                        cursor.execute("SELECT current_rate FROM utilities WHERE id = ?",(siteno,))
-                        owner=cursor.fetchone()
-                        if(owner[0]=="rent_multiplier_1"):
-                            m=4
-                        elif(owner[0]=="rent_multiplier_2"):
-                            m=10
+                        cursor.execute("SELECT current_rent FROM utilities WHERE id = ?",(siteno,))
+                        rent_mul=cursor.fetchone()
+                        if(rent_mul[0]=="rent_multiplier_1"):
+                            m=4000
+                        elif(rent_mul[0]=="rent_multiplier_2"):
+                            m=10000
                         rent_money=m*diceroll
-
                     elif(p_type==3):
                         #get the current rent bracket 
                         cursor.execute("SELECT current_rate FROM trains WHERE id = ?",(siteno,))
@@ -130,20 +191,38 @@ def startgame(gname):
                     #getting the balance of the owner of the property
                     cursor.execute("SELECT current_money FROM players WHERE name = ?",(owner[0],))
                     owner_balance=cursor.fetchone()
-                    if(rent_money[0]<payer_balance[0]):
-                        p_balance=payer_balance[0]-rent_money[0]
-                        o_balance=owner_balance[0]+rent_money[0]
-                        #updating the payer's balance amount into is database
-                        up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                        val2 = (p_balance, payer)
-                        cursor.execute(up1, val2)
-                        #updating the payer's balance amount into is database
-                        up2 = "UPDATE players SET current_money = ? WHERE name = ?"
-                        val3 = (o_balance,owner[0])
-                        cursor.execute(up2, val3)
-                        con.commit()    
-                    else:
-                        print("Insufficient balance for the player!!")
+                    print(owner_balance)
+                    if(p_type==2):
+                        if(rent_money<payer_balance[0]):
+                            print(owner_balance)
+                            p_balance=payer_balance[0]-rent_money
+                            o_balance=owner_balance[0]+rent_money
+                            #updating the payer's balance amount into is database
+                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
+                            val2 = (p_balance, payer)
+                            cursor.execute(up1, val2)
+                            #updating the payer's balance amount into is database
+                            up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                            val3 = (o_balance,owner[0])
+                            cursor.execute(up2, val3)
+                            con.commit()
+                        else:
+                            print("Insufficient balance for the player!!")
+                    else:        
+                        if(rent_money[0]<payer_balance[0]):
+                            p_balance=payer_balance[0]-rent_money[0]
+                            o_balance=owner_balance[0]+rent_money[0]
+                            #updating the payer's balance amount into is database
+                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
+                            val2 = (p_balance, payer)
+                            cursor.execute(up1, val2)
+                            #updating the payer's balance amount into is database
+                            up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                            val3 = (o_balance,owner[0])
+                            cursor.execute(up2, val3)
+                            con.commit()    
+                        else:
+                            print("Insufficient balance for the player!!")
                     con.close()        
                 else:
                     print("This property is not bought by any of the players")
@@ -312,6 +391,16 @@ def startgame(gname):
                 print("The property is not yet bought from the bank yet by any players!!")
 
         elif(ch==4):
+            result_func()
+            con=connect_db()
+            cursor=con.cursor()
+            id_no=1
+            value=1
+            up1 = "UPDATE game SET endgame = ? WHERE id = ?"
+            val2 = (value,id_no)
+            cursor.execute(up1, val2)
+            con.commit()
+            con.close()
             exit()
         else:
             print("Invalid Choice!..Please try again")
@@ -363,6 +452,9 @@ def deletegame():
     
     up6 = "UPDATE utilities SET current_rent = 'rent_multiplier_1'"
     cursor.execute(up6)
+
+    up7 = "UPDATE game SET endgame = 0"
+    cursor.execute(up7)
     con.commit()
     print("The Saved game is sucessfully deleted!!")
     con.close()
@@ -387,15 +479,32 @@ def continue_game():
 
 #starting of the code
 while(play!=False):
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute('SELECT endgame FROM game WHERE id = 1')
+    result = cursor.fetchone()
     print("------------------------------------------------------------------------------------------------")
     print("---------------------------WELCOME TO GAME MANAGER OF MONOPOLY----------------------------------")
     print("1.NEW GAME\n2.Continue Game\n3.Exit game")
     ch=int(input("ENTER YOUR CHOICE:"))
     if(ch==1):
-        deletegame()
-        newgame()
+        if(result[0]==0):
+            print("PREVIOUS GAME NOT COMPLETED YET DO YOU WANT TO CREATE A NEW GAME AND DELETE THE EXISISTING ONE?\n1.YES\n2.NO")
+            q=int(input())
+            if(q==1):
+                deletegame()
+                newgame()
+            elif(q==2):
+                pass
+        else:
+            deletegame()
+            newgame()
     elif(ch==2):
-        continue_game()
+        if(result[0]==1):
+            print("THE SAVED GAME IS ENDED !! \nTHE RESULTS FOR THE SAVED GAME IS AS FOLLOWS:\n")
+            result_func()
+        else:
+            continue_game()
     elif(ch==3):
         exit()
     else:
