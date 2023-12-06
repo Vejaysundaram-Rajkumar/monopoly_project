@@ -134,7 +134,7 @@ def startgame(gname):
     while(p!=False):
         print("------------------------------------------------------------------------------------------------")
         print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
-        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:End the Game and give the winner\n")
+        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:Pay FINE TO THE GOVERNMENT OR GET REWARD FROM THE GOVERNMENT\n5:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==1):
             p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
@@ -391,6 +391,39 @@ def startgame(gname):
                 print("The property is not yet bought from the bank yet by any players!!")
 
         elif(ch==4):
+            con=connect_db()
+            cursor=con.cursor()
+            payto=int(input("Choose the correct option\n1.Pay the Government\n2.Government pays you"))
+            if(payto==1):
+                amount=int(input("Enter the Fine or loss amount occured:"))
+                payer=int(input("Enter the player number who has to pay:"))
+                #getting the balance of the player
+                cursor.execute("SELECT current_money FROM players WHERE id= ?",(payer,))
+                b_balance=cursor.fetchone()
+                if(amount<=b_balance[0]):
+                    payer_bal=b_balance[0]-amount
+                    #updating the builder's balance amount into is database
+                    up1 = "UPDATE players SET current_money = ? WHERE id = ?"
+                    val2 = (payer_bal, payer)
+                    cursor.execute(up1, val2)
+                    con.commit()
+                else:
+                    print("INSUFFICIENT BALANCE FOR THE PLAYER!!!")
+            elif(payto==2):
+                amount=int(input("Enter the Reward amount occured:"))
+                payer=int(input("Enter the player number who has gets the Reward amount:"))
+                #getting the balance of the player
+                cursor.execute("SELECT current_money FROM players WHERE id= ?",(payer,))
+                b_balance=cursor.fetchone()
+                payer_bal=b_balance[0]+amount
+                #updating the builder's balance amount into is database
+                up1 = "UPDATE players SET current_money = ? WHERE id = ?"
+                val2 = (payer_bal, payer)
+                cursor.execute(up1, val2)
+                con.commit()
+            else:
+                print("Enter an valid choice!!")
+        elif(ch==5):
             result_func()
             con=connect_db()
             cursor=con.cursor()
@@ -500,6 +533,15 @@ while(play!=False):
         if(result[0]==1):
             print("THE SAVED GAME IS ENDED !! \nTHE RESULTS FOR THE SAVED GAME IS AS FOLLOWS:\n")
             result_func()
+            print("what do you want to do?\n1.START A NEW GAME\n2.EXIT")
+            c=int(input())
+            if(c==1):
+                deletegame()
+                newgame()
+            elif(c==2):
+                exit()
+            else:
+                print("Invalid choice!!")
         else:
             continue_game()
     elif(ch==3):
