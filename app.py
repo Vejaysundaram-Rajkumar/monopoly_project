@@ -72,7 +72,7 @@ def startgame(gname):
     while(p!=False):
         print("------------------------------------------------------------------------------------------------")
         print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
-        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an House \n4:Build an Hotel\n5:End the Game and give the winner")
+        print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==1):
             p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
@@ -223,10 +223,11 @@ def startgame(gname):
                 print("INVALID CHOICE!!")
             
         elif(ch==3):
-            buyer=int(input("Enter the player number who wants to build the house:"))
-            siteno=int(input("Enter the id number of the property in which you want to build:"))
+            b_type=int(input("Enter the type of Construction:\n1.House\n2.Hotel\n"))
             con=connect_db()
             cursor=con.cursor()
+            buyer=int(input("Enter the player number who wants to build:"))
+            siteno=int(input("Enter the id number of the property in which you want to build:"))
             #get the current rent bracket 
             cursor.execute("SELECT current_rent FROM cities WHERE id = ?",(siteno,))
             rent_set=cursor.fetchone()
@@ -241,7 +242,7 @@ def startgame(gname):
                 owner_name=cursor.fetchone()
                 if(owner==owner_name):
                     #if maximum is reached then returning the message for the builder
-                    if(rent_set[0]!="rent_H4"):
+                    if(rent_set[0]!="rent_H4" and b_type==1):
                         #getting the next rent bracket  
                         if(rent_set[0]=="rent"):
                             next_rent="rent_H1"
@@ -275,18 +276,42 @@ def startgame(gname):
                         else:
                             print("Insufficient balance for the player!!")
                             con.close()
+                    elif(b_type==2 and rent_set[0]=='rent_H4'):
+                        next_rent="rent_Hotel"
+                        #Getting the cost for building an house
+                        cursor.execute("SELECT house_cost FROM cities WHERE id = ?",(siteno,))
+                        Hbuild_cost=cursor.fetchone()
+                        #getting the balance of the player
+                        cursor.execute("SELECT current_money FROM players WHERE id= ?",(buyer,))
+                        b_balance=cursor.fetchone()
+
+                        if(Hbuild_cost[0]<=b_balance[0]):
+                            builder_balance=b_balance[0]-Hbuild_cost[0]
+                            #updating the builder's balance amount into is database
+                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
+                            val2 = (builder_balance, buyer)
+                            cursor.execute(up1, val2)
+
+                            #updating the owner of the property into is database                        
+                            up2 = "UPDATE cities SET current_rent = ? WHERE id = ?"
+                            val3 = (next_rent,siteno)
+                            cursor.execute(up2, val3)
+                            con.commit()
+                        else:
+                            print("Insufficient balance for the player!!")
+                            con.close()
+                    elif(b_type==2 and rent_set[0]!="rent_H4"):
+                        print("REQUIRED AMOUNT OF HOUSES IS NOT BUILT YET IN THIS PROPERTY!!")
+                    elif(b_type==2 and rent_set[0]=="rent_Hotel"):
+                        print("NO MORE HOTEL CAN BE BUILT IN THIS PROPERTY!!")
                     else:
-                        print("MAXIMUM NUMBER OF HOUSES IS ALREADY BUILT")
+                        print("NO MORE HOUSES CAN BE BUILT IN THIS PROPERTY!!")
                 else:
                     print("The owner of the property and the builder mismatched!!")
             else:
                 print("The property is not yet bought from the bank yet by any players!!")
 
         elif(ch==4):
-            pass
-        elif(ch==5):
-            trains_rent_check()
-            utility_rent_check()
             exit()
         else:
             print("Invalid Choice!..Please try again")
@@ -297,7 +322,7 @@ def newgame():
     print("-------------------------------------------------------------------------------------------------")
     print("-----------------------------------------NEW GAME------------------------------------------------")
     n=int(input("Enter number of players:"))
-    money=8000000
+    money=9000000
     name=''
     gamename=checkgamename(name)
     #print(gamename)    
