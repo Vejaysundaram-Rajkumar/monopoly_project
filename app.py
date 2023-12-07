@@ -2,6 +2,9 @@ from numerize import numerize
 from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 import hashlib
+import locale
+locale.setlocale(locale.LC_MONETARY, 'en_IN')
+
 
 #Creating an object for the flask called app
 app = Flask(__name__)
@@ -22,14 +25,12 @@ def submit():
     gamename = request.form.get('gamename')
     num_players = int(request.form.get('numPlayers'))
     player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
-
-    # Handle the form data as needed (e.g., store in a database, process, etc.)
-    # For now, just print the data
+    amount=locale.currency(200000, grouping=True)
     print(f'Game Name: {gamename}')
     print(f'Number of Players: {num_players}')
     print(f'Player Names: {player_names}')
     
-    return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_names=player_names)
+    return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_names=player_names,amount=amount)
 
 
 @app.route('/create', methods=['GET', 'POST'])
