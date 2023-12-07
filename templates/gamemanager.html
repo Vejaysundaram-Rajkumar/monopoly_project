@@ -43,25 +43,26 @@
         }
 
         .option {
-            background-color: #2ecc71;
-            color: #fff;
-            padding: 1.5em;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
+        background-size:30%; 
+        background-position: right; 
+        background-repeat: no-repeat;
+        padding: 20px; 
+        margin: 10px; 
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .option:hover {
-            background-color: #27ae60;
-            transform: scale(1.05);
-        }
+    .option:hover {
+        background-color: #27ae60; 
+        transform: scale(1.05);
+    }
         .sidebar {
             background-color: #3498db;
             color: #fff;
@@ -119,23 +120,23 @@
         <div class="title-bar">Game Options</div>
         
         <div class="options">
-            <button class="option" style="background-image: url('static/pay_rent_icon.png')">
+            <button class="option" style="background-image: url('static/images/rent.png')">
                 Pay Rent
             </button>
-            <button class="option" style="background-image: url('static/pay_government_icon.png')">
-                Pay the Government
+            <button class="option" style="background-image: url('static/images/pay_government.png')">
+                Pay the Bank
             </button>
-            <button class="option" style="background-image: url('static/reward_icon.png')">
-                Get Reward from Government
+            <button class="option" style="background-image: url('static/images/reward.png')">
+                Get Reward from Bank
             </button>
-            <button class="option" style="background-image: url('static/buy_property_icon.png')">
+            <button class="option" style="background-image: url('static/images/buy.png')">
                 Buy Property
             </button>
-            <button class="option" style="background-image: url('static/end_game_icon.png')">
-                End Game and Announce Winner
+            <button class="option" style="background-image: url('static/images/end.png')">
+                End Game and Declare the  Winner
             </button>
-            <button class="option" style="background-image: url('static/build_icon.png')">
-                Build House or Hotel
+            <button class="option" style="background-image: url('static/images/build.png')">
+                Build an House <Br>or an Hotel
             </button>
         </div>
     </main>
