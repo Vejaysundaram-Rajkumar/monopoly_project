@@ -21,6 +21,10 @@ def connect_db():
 def index():
     return render_template("index.html")
 
+@app.route('/deletegame')
+def deletegame():
+    return render_template("error.html")
+
 @app.route('/submit', methods=['POST'])
 def submit():
     gamename = request.form.get('gamename')
