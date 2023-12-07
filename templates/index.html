@@ -1,110 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script src="https://kit.fontawesome.com/d92630495d.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-      <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <!-- css -->
-    <link rel="stylesheet" href="static\index.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2em auto;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2em;
+        }
+
+        .option {
+            background-color: #3498db;
+            color: #fff;
+            padding: 1em;
+            width: 200px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            margin: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        .option:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        /* Overlay styles */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        button.next {
+            margin-top: 10px;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Style for the "Next" button */
+        .form-container button.next {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        .form-container button.next:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        /* Style for the "Submit" button */
+        .form-container button.submit {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        .form-container button.submit:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
+
+    </style>
 </head>
 <body>
-        <div id="content">
-            <div id="contentnav">
-                <nav id="navmenu">
-                    <ul>
-                        <li>
-                            <a href="#">Home
-                            <i class="fa-solid fa-house fa-xl"></i>
-                        </a>
-                        </li>
-                        <li>
-                            <a href="#">About
-                            <i class="fa-regular fa-address-card fa-xl"></i>
-                        </a>
-                        </li>
-                        <li>
-                            <a href="#">Description
-                            <i class="fa-sharp fa-solid fa-question fa-xl"></i>
-                        </a>
-                        </li>
-                    </ul>  
-                </nav>
-                <div id="image-section">
-                    <img src="static/images/landing.png" width="100%" height="60%"alt="monopoly">
-                </div>
-        
+
+    <header>
+        <h1>Game Menu</h1>
+    </header>
+
+    <main>
+        <div class="options">
+            <button class="option" onclick="showOverlay()">New Game</button>
+            <button class="option" onclick="location.href='delete-saved-game.html'">Delete the saved game</button>
+            <button class="option" onclick="location.href='continue-game.html'">Continue Game</button>
+            <button class="option" onclick="location.href='exit-game.html'">Exit Game</button>
         </div>
-    <p>
-      <button class="button" data-modal="modalOne">New Game</button>
-    </p>
-    <div id="modalOne" class="modal">
-      <div class="modal-content">
-        <div class="contact-form">
-          <a class="close">&times;</a>
-          <form action="/create" method="POST" id="myForm">
-            <h2>New Game</h2>
-            
-                    <label for="myDropdown">Give the number of players:</label>
-                    <select id="myDropdown" onchange="addInputFields()">
-                    <option value="0">Select an option</option>
-                    <option value="1">1</option>
+    </main>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay">
+        <div class="form-container">
+            <div class="step" id="step1">
+                <h2>Step 1</h2>
+                <label for="numPlayers">Select Number of Players:</label>
+                <select id="numPlayers" name="numPlayers">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
-                    </select>
-                  <div id="inputContainer"></div>                  
-            <button type="submit">Submit</button> 
-        </form>
+                </select>
+                <button class="next" onclick="nextStep()">Next</button>
+            </div>
+            <div class="step" id="step2">
+                <h2>Step 2</h2>
+                <p>Enter the names of the players:</p>
+                <div id="playerNames"></div>
+                <button class="next" onclick="nextStep()">Next</button>
+            </div>
+            <div class="step" id="step3">
+                <h2>Step 3</h2>
+                <p>Give a name to the game :</p>
+                <input type="text" id="gamename"></input>
+                <button class="next" onclick="submitForm()">Submit</button>
+            </div>
+            
         </div>
-      </div>
     </div>
+
     <script>
-      let modalBtns = [...document.querySelectorAll(".button")];
-      modalBtns.forEach(function (btn) {
-        btn.onclick = function () {
-          let modal = btn.getAttribute("data-modal");
-          document.getElementById(modal).style.display = "block";
-        };
-      });
-      let closeBtns = [...document.querySelectorAll(".close")];
-      closeBtns.forEach(function (btn) {
-        btn.onclick = function () {
-          let modal = btn.closest(".modal");
-          modal.style.display = "none";
-        };
-      });
-      window.onclick = function (event) {
-        if (event.target.className === "modal") {
-          event.target.style.display = "none";
+    function showOverlay() {
+        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('step1').classList.add('active');
+    }
+
+    function nextStep() {
+        const activeStep = document.querySelector('.step.active');
+        const nextStep = activeStep.nextElementSibling;
+
+        // Validate input before proceeding to the next step
+        if (validateStep(activeStep)) {
+            activeStep.classList.remove('active');
+            if (nextStep) {
+                nextStep.classList.add('active');
+                // If it's the second step, dynamically generate input fields for player names
+                if (nextStep.id === 'step2') {
+                    const numPlayers = document.getElementById('numPlayers').value;
+                    generatePlayerNameFields(numPlayers);
+                }
+            } else {
+                document.getElementById('overlay').style.display = 'none';
+            }
         }
-      };
-    </script>
-    <script>
-function addInputFields() {
-  var dropdown = document.getElementById("myDropdown").value;
-  var inputContainer = document.getElementById("inputContainer");
-  
-  // Clear existing input fields
-  inputContainer.innerHTML = "";
-  
-  // Create new input fields based on the selected option
-  for (var i = 1; i <= dropdown; i++) {
-    var input = document.createElement("input");
-    input.type = "text";
-    input.name = "Player" + i;
-    input.placeholder = "Enter player no " + i;
-    inputContainer.appendChild(input);
-  }
+    }
+
+    function validateStep(step) {
+        const inputs = step.querySelectorAll('input');
+        for (const input of inputs) {
+            if (input.required && !input.value.trim()) {
+                alert('Please fill out all required fields.');
+                return false;
+            }
+        }
+         // Additional check for Step 3 (gamename)
+    if (step.id === 'step3') {
+        const gamenameInput = document.getElementById('gamename');
+        if (gamenameInput.required && !gamenameInput.value.trim()) {
+            alert('Please fill out all required fields.');
+            return false;
+        }
+    }
+
+    return true;
+}
+    function generatePlayerNameFields(numPlayers) {
+        const playerNamesContainer = document.getElementById('playerNames');
+        playerNamesContainer.innerHTML = '';
+
+        for (let i = 1; i <= numPlayers; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Player ${i} Name`;
+            input.name = `player${i}`;
+            input.required = true; // Make player names required
+            playerNamesContainer.appendChild(input);
+        }
+    }
+
+    function submitForm() {
+    if (validateStep(document.getElementById('step3'))) {
+        // Handle form submission here
+        const gamename = document.getElementById('gamename').value;
+        const numPlayers = document.getElementById('numPlayers').value;
+        const playerNames = [];
+        for (let i = 1; i <= numPlayers; i++) {
+            const playerName = document.getElementsByName(`player${i}`)[0].value;
+            playerNames.push(playerName);
+        }
+
+        // Use AJAX or another method to send the data to the Flask server
+        // Here, I'm using a simple form submission for demonstration
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/submit';
+
+        // Include numPlayers in the form data
+        const numPlayersInput = document.createElement('input');
+        numPlayersInput.type = 'hidden';
+        numPlayersInput.name = 'numPlayers';
+        numPlayersInput.value = numPlayers;
+        form.appendChild(numPlayersInput);
+
+        const gamenameInput = document.createElement('input');
+        gamenameInput.type = 'hidden';
+        gamenameInput.name = 'gamename';
+        gamenameInput.value = gamename;
+        form.appendChild(gamenameInput);
+
+        for (let i = 0; i < numPlayers; i++) {
+            const playerNameInput = document.createElement('input');
+            playerNameInput.type = 'hidden';
+            playerNameInput.name = `player${i + 1}`;
+            playerNameInput.value = playerNames[i];
+            form.appendChild(playerNameInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
-
     </script>
+
 </body>
 </html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game Manager</title>
+    <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('static/images/landing.png'); /* Replace with your background image path */
+            background-size: 50%;
+            background-position:center;
+            background-position-y: 470px; 
+            background-repeat: no-repeat;
+            background-color: rgba(239, 86, 86, 0.8); /* Adjust the alpha value for opacity */
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2em auto;
+            text-align: center;
+        }
+
+        .title-bar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 1em;
+            font-size: 1.5em;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1em;
+            margin-top: 2em;
+        }
+
+        .option {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 1.5em;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .option:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
+        .sidebar {
+            background-color: #3498db;
+            color: #fff;
+            width: 200px;
+            height: 70vh; /* Invert the rectangle */
+            display: flex;
+            position: fixed;
+            left:100px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: left;
+            text-align: center;
+        }
+
+        .player-outstanding {
+            margin: 0.5em 0;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 0.2em;
+        }
+
+        .money-in-hand {
+            color: #000000;
+            font-weight: bold;
+        }
+        .sidebar-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Monopoly Game Manager - {{gamename}}</h1>
+    </header>
+
+    <main>
+        <div class="sidebar">
+            <div class="sidebar-title">Player Info</div>
+            {% for player in player_names %}
+                <div class="player-outstanding">
+                    <div class="player-name">{{ player }}</div>
+                    <div class="money-in-hand">{{ amount }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        </div>
+        <div class="title-bar">Game Options</div>
+        
+        <div class="options">
+            <button class="option" style="background-image: url('static/pay_rent_icon.png')">
+                Pay Rent
+            </button>
+            <button class="option" style="background-image: url('static/pay_government_icon.png')">
+                Pay the Government
+            </button>
+            <button class="option" style="background-image: url('static/reward_icon.png')">
+                Get Reward from Government
+            </button>
+            <button class="option" style="background-image: url('static/buy_property_icon.png')">
+                Buy Property
+            </button>
+            <button class="option" style="background-image: url('static/end_game_icon.png')">
+                End Game and Announce Winner
+            </button>
+            <button class="option" style="background-image: url('static/build_icon.png')">
+                Build House or Hotel
+            </button>
+        </div>
+    </main>
+
+</body>
+</html>
