@@ -107,14 +107,15 @@
     <main>
         <div class="sidebar">
             <div class="sidebar-title">Player Info</div>
-            {% for player in player_names %}
+            {% for info in player_info %}
                 <div class="player-outstanding">
-                    <div class="player-name">{{ player }}</div>
-                    <div class="money-in-hand">{{ amount }}</div>
+                    <div class="player-name">{{ info['name'] }}</div>
+                    <div class="money-in-hand">{{ info['amount'] }}</div>
                 </div>
             {% endfor %}
         </div>
-        </div>
+                
+        
         <div class="title-bar">Game Options</div>
         
         <div class="options">

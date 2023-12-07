@@ -4,6 +4,7 @@ import sqlite3
 import hashlib
 import locale
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
+import gamelogiccopy
 
 
 #Creating an object for the flask called app
@@ -25,28 +26,23 @@ def submit():
     gamename = request.form.get('gamename')
     num_players = int(request.form.get('numPlayers'))
     player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
-    amount=locale.currency(200000, grouping=True)
     print(f'Game Name: {gamename}')
     print(f'Number of Players: {num_players}')
     print(f'Player Names: {player_names}')
-    
-    return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_names=player_names,amount=amount)
+    db=gamelogiccopy.newgame(num_players, player_names,gamename)
+    if(db):
+        print("Database updated sucessfully")
+        con=connect_db()
+        cursor=con.cursor()
+        cursor.execute("SELECT current_money FROM players")
+        payer_balance=cursor.fetchall()
+        player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
+        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info)
+    else:
+        print("Database updation errorr!!")
+        return render_template("error.html")
 
 
-@app.route('/create', methods=['GET', 'POST'])
-def create():
-    if request.method == 'POST':
-        num_players = int(request.form['myDropdown'])
-        money=2000000
-        conn = sqlite3.connect('gamedetails.db')
-        cursor = conn.cursor()
-        player_name = "aa"
-        print(player_name)
-        cursor.execute("INSERT INTO players (id,name,current_money) VALUES (?, ?, ?)", (1,player_name,money))
-        conn.commit()
-        conn.close()
-
-    return redirect('/')
 
 
 if __name__ == '__main__':
