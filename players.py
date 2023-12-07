@@ -8,7 +8,8 @@ cursor.execute('''
 CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY,
     name TEXT,
-    current_money INTEGER
+    current_money INTEGER,
+    game_name TEXT
 )
 ''')
 conn.commit()
