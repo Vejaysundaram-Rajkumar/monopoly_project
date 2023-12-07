@@ -17,6 +17,21 @@ def connect_db():
 def index():
     return render_template("index.html")
 
+@app.route('/submit', methods=['POST'])
+def submit():
+    gamename = request.form.get('gamename')
+    num_players = int(request.form.get('numPlayers'))
+    player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
+
+    # Handle the form data as needed (e.g., store in a database, process, etc.)
+    # For now, just print the data
+    print(f'Game Name: {gamename}')
+    print(f'Number of Players: {num_players}')
+    print(f'Player Names: {player_names}')
+    
+    return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_names=player_names)
+
+
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
