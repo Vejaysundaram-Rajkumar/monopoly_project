@@ -138,6 +138,7 @@
     <main>
         <div class="options">
             <button class="option" onclick="newgame()">New Game</button>
+            <button class="option" onclick="deleteGame()">Delete the saved game</button>
             <button class="option" onclick="location.href='continue-game.html'">Continue Game</button>
             <button class="option" onclick="window.close()">Exit Game</button>
         </div>
@@ -177,6 +178,7 @@
     <script>
 function newgame(){
     deleteGame();
+    showOverlay();
 }
 
 function deleteGame() {
@@ -201,7 +203,7 @@ function deleteGame() {
                 alert(text);
             } else {
                 alert('Game deleted sucessfully!!');    
-                showOverlay();
+                
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
