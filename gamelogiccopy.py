@@ -134,98 +134,7 @@ def startgame(gname):
         print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:Pay FINE TO THE GOVERNMENT OR GET REWARD FROM THE GOVERNMENT\n5:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==1):
-            p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
-            if(p_type>=1 and p_type<=3):
-                payer=int(input("Enter the player number whom has to pay the rent: "))
-                siteno=int(input("Enter the id number of the property:"))
-                con=connect_db()
-                cursor=con.cursor()
-                if(p_type==1):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM cities WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                elif(p_type==2):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM utilities WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                elif(p_type==3):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM trains WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                if(owner[0]!="bank"):
-                    if(p_type==1):
-                        #get the current rent bracket 
-                        cursor.execute("SELECT current_rent FROM cities WHERE id = ?",(siteno,))
-                        rent_set=cursor.fetchone()
-                    
-                        #get the rent money in that particular bracket
-                        cursor.execute("SELECT {} FROM cities WHERE id = ?".format(rent_set[0]), (siteno,))
-                        rent_money=cursor.fetchone()
-
-                    elif(p_type==2):
-                        diceroll=int(input("Enter the number displayed on your dice: "))
-                        #current multiplyer bracket is found here from the database
-                        cursor.execute("SELECT current_rent FROM utilities WHERE id = ?",(siteno,))
-                        rent_mul=cursor.fetchone()
-                        if(rent_mul[0]=="rent_multiplier_1"):
-                            m=4000
-                        elif(rent_mul[0]=="rent_multiplier_2"):
-                            m=10000
-                        rent_money=m*diceroll
-                    elif(p_type==3):
-                        #get the current rent bracket 
-                        cursor.execute("SELECT current_rate FROM trains WHERE id = ?",(siteno,))
-                        rent_set=cursor.fetchone()
-                    
-                        #get the rent money in that particular bracket
-                        cursor.execute("SELECT {} FROM trains WHERE id = ?".format(rent_set[0]), (siteno,))
-                        rent_money=cursor.fetchone()                    
-
-                    #Get the balance money of the payer whom has to pay the rent
-                    cursor.execute("SELECT current_money FROM players WHERE id = ?",(payer,))
-                    payer_balance=cursor.fetchone()                
-                
-                    #getting the balance of the owner of the property
-                    cursor.execute("SELECT current_money FROM players WHERE name = ?",(owner[0],))
-                    owner_balance=cursor.fetchone()
-                    print(owner_balance)
-                    if(p_type==2):
-                        if(rent_money<payer_balance[0]):
-                            print(owner_balance)
-                            p_balance=payer_balance[0]-rent_money
-                            o_balance=owner_balance[0]+rent_money
-                            #updating the payer's balance amount into is database
-                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                            val2 = (p_balance, payer)
-                            cursor.execute(up1, val2)
-                            #updating the payer's balance amount into is database
-                            up2 = "UPDATE players SET current_money = ? WHERE name = ?"
-                            val3 = (o_balance,owner[0])
-                            cursor.execute(up2, val3)
-                            con.commit()
-                        else:
-                            print("Insufficient balance for the player!!")
-                    else:        
-                        if(rent_money[0]<payer_balance[0]):
-                            p_balance=payer_balance[0]-rent_money[0]
-                            o_balance=owner_balance[0]+rent_money[0]
-                            #updating the payer's balance amount into is database
-                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                            val2 = (p_balance, payer)
-                            cursor.execute(up1, val2)
-                            #updating the payer's balance amount into is database
-                            up2 = "UPDATE players SET current_money = ? WHERE name = ?"
-                            val3 = (o_balance,owner[0])
-                            cursor.execute(up2, val3)
-                            con.commit()    
-                        else:
-                            print("Insufficient balance for the player!!")
-                    con.close()        
-                else:
-                    print("This property is not bought by any of the players")
-
-            else:
-                print("Invalid choice!!.")
+            pass
         elif(ch==2):
             pass
         elif(ch==3):
@@ -452,6 +361,75 @@ def building_func(playername,p_type,prop_name):
         con.close()
         return b
 
+def payingrent_func(payer,p_type,prop_name,diceno):
+    con=connect_db()
+    cursor=con.cursor()
+    up1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
+    val1 = (prop_name,)
+    cursor.execute(up1, val1)
+    owner = cursor.fetchone()
+    if(owner[0]!="bank"):            
+        #get the current rent bracket 
+        up2 = "SELECT current_rent FROM {} WHERE name = ?".format(p_type)
+        val2 = (prop_name,)
+        cursor.execute(up2, val2)
+        rent_set=cursor.fetchone()    
+        #get the rent money in that particular bracket
+        up2 = "SELECT {} FROM {} WHERE name = ?".format(rent_set[0]),(p_type)
+        val2 = (prop_name,)
+        cursor.execute(up2, val2)
+        rent_money=cursor.fetchone()        
+        if(p_type=="utilities" and diceno!=0):
+            util_rent=rent_money[0]*diceno
+        else:
+            pass
+        #Get the balance money of the payer whom has to pay the rent
+        cursor.execute("SELECT current_money FROM players WHERE name = ?",(payer,))
+        payer_balance=cursor.fetchone()                
+        
+        #getting the balance of the owner of the property
+        cursor.execute("SELECT current_money FROM players WHERE name = ?",(owner[0],))
+        owner_balance=cursor.fetchone()
+        print(owner_balance)
+        if(p_type=="utilities"):
+            if(util_rent<payer_balance[0]):
+                print(owner_balance)
+                p_balance=payer_balance[0]-rent_money
+                o_balance=owner_balance[0]+rent_money
+                #updating the payer's balance amount into is database
+                up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                val2 = (p_balance, payer)
+                cursor.execute(up1, val2)
+                #updating the payer's balance amount into is database
+                up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                val3 = (o_balance,owner[0])
+                cursor.execute(up2, val3)
+                con.commit()
+            else:
+                b=-1
+                return b
+        else:        
+            if(rent_money[0]<payer_balance[0]):
+                p_balance=payer_balance[0]-rent_money[0]
+                o_balance=owner_balance[0]+rent_money[0]
+                #updating the payer's balance amount into is database
+                up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                val2 = (p_balance, payer)
+                cursor.execute(up1, val2)
+                #updating the payer's balance amount into is database
+                up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                val3 = (o_balance,owner[0])
+                cursor.execute(up2, val3)
+                con.commit()    
+            else:
+                b=-1
+                return b
+        b=1
+        con.close()
+        return b        
+    else:
+        b=0
+        return b
 
 
 #Deleting the created game.
@@ -468,7 +446,7 @@ def deletegame():
     up3 = "UPDATE trains SET Owner = 'bank'"
     cursor.execute(up3)
 
-    up4 = "UPDATE trains SET current_rate = 'rent_1T'"
+    up4 = "UPDATE trains SET current_rent = 'rent_1T'"
     cursor.execute(up4)
     
     up5 = "UPDATE cities SET current_rent = 'rent'"

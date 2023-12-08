@@ -180,6 +180,12 @@
         .closebtn:hover {
         color: black;
         }
+
+        .close{
+        position: fixed;
+        left:650px;
+        bottom:20px;
+        }
     </style>
 </head>
 <body>
@@ -228,6 +234,7 @@
         </div>
     </main>
     <div id="popup" class="popup">
+        
         <h2>Buy an  Property</h2>
         <form id="buildForm">
             <label for="player">Select Player:</label>
@@ -250,9 +257,11 @@
             <select id="specificProperty" name="specificProperty">
                 <!-- Options will be dynamically updated based on propertyType -->
             </select>
-
+            
             <button type="button" onclick="buyProperty()">Buy</button>
+            
         </form>
+        <button class="close" onclick="hidePopup()">Cancel</button>
     </div>
     <div id="overlay" class="overlay"></div>
     
