@@ -29,6 +29,7 @@ def deletegame():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    gamelogiccopy.deletegame()
     gamename = request.form.get('gamename')
     num_players = int(request.form.get('numPlayers'))
     player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
