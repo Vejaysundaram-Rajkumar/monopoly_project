@@ -66,6 +66,8 @@ def submit():
         error_message="Some error occured while updating the database!!"
         return render_template("error.html",error_title=error_title,error_message=error_message)
 
+
+
 @app.route('/buy_property', methods=['POST'])
 def buy_property():
     data = request.get_json()
@@ -75,46 +77,11 @@ def buy_property():
     build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)
     print(build_db)    
     if(build_db==-1):
-        error_title="INSUFFICIENT BALANCE!!"
-        error_message="YOU MUST HAVE ENOUGH MONEY TO BUY THIS PROPERTY!"
-        return render_template("error.html",error_title=error_title,error_message=error_message)
+        return jsonify({'status': 'error', 'message': 'insufficient funds' })
     elif(build_db==1):
-        print("inside")
-        con=connect_db()
-        cursor=con.cursor()
-        cursor.execute("SELECT game_name FROM players")
-        gamename=cursor.fetchone()
-        cursor.execute("SELECT COUNT(*) FROM players")
-        num_players=cursor.fetchone()  
-        cursor.execute("SELECT name FROM players")
-        p_names=cursor.fetchall()
-        player_names = [name[0] for name in p_names]
-        cursor.execute("SELECT current_money FROM players")
-        payer_balance=cursor.fetchall()
-        player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
-        print(payer_balance)
-        cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
-        cities_list=cursor.fetchall()
-        site_names = [name[0] for name in cities_list]
-        
-        cursor.execute("SELECT name FROM utilities WHERE Owner= ?",("bank",))
-        utilities_list=cursor.fetchall()
-        utilities_names = [name[0] for name in utilities_list]
-        
-        cursor.execute("SELECT name FROM trains WHERE Owner= ?",("bank",))
-        trains_list=cursor.fetchall()
-        train_names = [name[0] for name in trains_list]
-
-        site_name=json.dumps(site_names)
-        utilities_name=json.dumps(utilities_names)
-        train_name=json.dumps(train_names)
-
-        return render_template("gamemanager.html",gamename=gamename[0],num_of_players=num_players[0],player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name)
-
+        return jsonify({'status': 'success'})
     elif(build_db==0):
-        error_title="PROPERTY IS BOUGHT ALREADY!!"
-        error_message="ANOTHER PLAYER HAVE BOUGHT THIS PROPERTY!"
-        return render_template("error.html",error_title=error_title,error_message=error_message)
+        return jsonify({'status': 'error', 'message': 'bought' })
     else:
         return render_template("error.html")
 
