@@ -35,8 +35,8 @@ def submit():
     print(f'Game Name: {gamename}')
     print(f'Number of Players: {num_players}')
     print(f'Player Names: {player_names}')
-    db=gamelogiccopy.newgame(num_players, player_names,gamename)
-    if(db):
+    try:
+        gamelogiccopy.newgame(num_players, player_names,gamename)
         print("Database updated sucessfully")
         con=connect_db()
         cursor=con.cursor()
@@ -61,9 +61,10 @@ def submit():
         train_name=json.dumps(train_names)
 
         return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name)
-    else:
-        print("Database updation errorr!!")
-        return render_template("error.html")
+    except:
+        error_title="Database updation errorr!!"
+        error_message="Some error occured while updating the database!!"
+        return render_template("error.html",error_title=error_title,error_message=error_message)
 
 @app.route('/buy_property', methods=['POST'])
 def buy_property():
@@ -71,10 +72,14 @@ def buy_property():
     player_name = data.get('playerName')
     property_type = data.get('propertyType')
     specific_property = data.get('specificProperty')
-    build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)    
+    build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)
+    print(build_db)    
     if(build_db==-1):
-        return render_template("insuff_amount.html")
-    elif(build_db==0):
+        error_title="INSUFFICIENT BALANCE!!"
+        error_message="YOU MUST HAVE ENOUGH MONEY TO BUY THIS PROPERTY!"
+        return render_template("error.html",error_title=error_title,error_message=error_message)
+    elif(build_db==1):
+        print("inside")
         con=connect_db()
         cursor=con.cursor()
         cursor.execute("SELECT game_name FROM players")
@@ -87,7 +92,7 @@ def buy_property():
         cursor.execute("SELECT current_money FROM players")
         payer_balance=cursor.fetchall()
         player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
-
+        print(payer_balance)
         cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
         cities_list=cursor.fetchall()
         site_names = [name[0] for name in cities_list]
@@ -106,11 +111,13 @@ def buy_property():
 
         return render_template("gamemanager.html",gamename=gamename[0],num_of_players=num_players[0],player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name)
 
-    elif(build_db==1):
-        build_status=1
+    elif(build_db==0):
+        error_title="PROPERTY IS BOUGHT ALREADY!!"
+        error_message="ANOTHER PLAYER HAVE BOUGHT THIS PROPERTY!"
+        return render_template("error.html",error_title=error_title,error_message=error_message)
     else:
         return render_template("error.html")
-    return jsonify({'status': build_status})
+
 
 
 if __name__ == '__main__':

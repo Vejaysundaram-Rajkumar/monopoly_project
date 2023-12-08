@@ -365,27 +365,40 @@ def startgame(gname):
             exit()
         else:
             print("Invalid Choice!..Please try again")
-
-
+#checking if the game is there or not
+def checkgamename(name):
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("SELECT count(*) FROM players WHERE game_name = ?",(name,))
+    n=cursor.fetchone()
+    con.commit()
+    con.close()
+    print(n)
+    if(n[0]>=1):
+        return True
+    else:
+        return False
 #creating an new game 
 def newgame(n,players,gamename):  
     money=9000000
-    #print(gamename)    
-    for i in range(n):
-        
-        temp_name=players[i]
-        p_no=i+1
-        try:
-            con=connect_db()
-            cursor=con.cursor()
-            cursor.execute("INSERT INTO players (id,name, current_money,game_name) VALUES (?, ?, ?, ?)", (p_no,temp_name,money,gamename))
-            con.commit()
-            con.close()
-        except:
-            err_message="error updating the database"
-            print("------------------------------------------------------------------------------------------------")
-            print(err_message)
-            return False
+    c=checkgamename(gamename)
+    if(c==True):
+        return True
+    else:    
+        for i in range(n):
+            temp_name=players[i]
+            p_no=i+1
+            try:
+                con=connect_db()
+                cursor=con.cursor()
+                cursor.execute("INSERT INTO players (id,name, current_money,game_name) VALUES (?, ?, ?, ?)", (p_no,temp_name,money,gamename))
+                con.commit()
+                con.close()
+            except:
+                err_message="error updating the database"
+                print("------------------------------------------------------------------------------------------------")
+                print(err_message)
+                return False
     return True
 
 

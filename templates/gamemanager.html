@@ -264,24 +264,31 @@
     }
 
     function buyProperty() {
-        const playerName = document.getElementById('player').value;
-        const propertyType = document.getElementById('propertyType').value;
-        const specificProperty = document.getElementById('specificProperty').value;
+    const playerName = document.getElementById('player').value;
+    const propertyType = document.getElementById('propertyType').value;
+    const specificProperty = document.getElementById('specificProperty').value;
 
-        // Make an AJAX request to Flask
-        $.ajax({
-            type: 'POST',
-            url: '/buy_property',  // Update the route based on your Flask setup
-            contentType: 'application/json;charset=UTF-8',
-            data: JSON.stringify({
-                playerName: playerName,
-                propertyType: propertyType,
-                specificProperty: specificProperty
-            }),
-        });
-        hidePopup();
-    }
-     
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/buy_property',  // Update the route based on your Flask setup
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+            playerName: playerName,
+            propertyType: propertyType,
+            specificProperty: specificProperty
+        }),
+        success: function () {
+            // Reload the page after successful update
+            location.reload();
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
+    });
+    hidePopup();
+}
+
 </script>
 
 </html>
