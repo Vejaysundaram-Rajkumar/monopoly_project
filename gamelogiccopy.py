@@ -133,11 +133,7 @@ def startgame(gname):
         print("---------------------------WELCOME TO GAME MANAGER OF",gname,"----------------------------------")
         print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:Pay FINE TO THE GOVERNMENT OR GET REWARD FROM THE GOVERNMENT\n5:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
-        if(ch==1):
-            pass
-        elif(ch==2):
-            pass
-        elif(ch==3):
+        if(ch==3):
             b_type=int(input("Enter the type of Construction:\n1.House\n2.Hotel\n"))
             con=connect_db()
             cursor=con.cursor()
