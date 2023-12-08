@@ -29,7 +29,7 @@ def deletegame():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    gamelogiccopy.deletegame()
+    #gamelogiccopy.deletegame()
     gamename = request.form.get('gamename')
     num_players = int(request.form.get('numPlayers'))
     player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
@@ -61,7 +61,25 @@ def submit():
         utilities_name=json.dumps(utilities_names)
         train_name=json.dumps(train_names)
 
-        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name)
+        cursor.execute("SELECT name FROM cities WHERE Owner!= ?",("bank",))
+        cities_list=cursor.fetchall()
+        paysite_names = [name[0] for name in cities_list]
+        
+        cursor.execute("SELECT name FROM utilities WHERE Owner!= ?",("bank",))
+        utilities_list=cursor.fetchall()
+        payutilities_names = [name[0] for name in utilities_list]
+        
+        cursor.execute("SELECT name FROM trains WHERE Owner!= ?",("bank",))
+        trains_list=cursor.fetchall()
+        paytrain_names = [name[0] for name in trains_list]
+
+        
+        paysite_name=json.dumps(paysite_names)
+        payutilities_name=json.dumps(payutilities_names)
+        paytrain_name=json.dumps(paytrain_names)
+
+
+        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name)
     except:
         error_title="Database updation errorr!!"
         error_message="Some error occured while updating the database!!"
@@ -85,6 +103,28 @@ def buy_property():
         return jsonify({'status': 'error', 'message': 'bought' })
     else:
         return render_template("error.html")
+
+@app.route('/pay_rent', methods=['POST'])
+def pay_rent():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    property_type = data.get('propertyType')
+    specific_property = data.get('specificProperty')
+    diceRoll = data.get('diceRoll')
+    print(diceRoll)
+    build_db=gamelogiccopy.payingrent_func(player_name, property_type, specific_property,diceRoll)
+    print(build_db)    
+    if(build_db==-1):
+        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+    elif(build_db==1):
+        return jsonify({'status': 'success'})
+    elif(build_db==0):
+        return jsonify({'status': 'error', 'message': 'This property is not yet bought! ' })
+    elif(build_db==-2):
+        return jsonify({'status': 'error', 'message': 'Same Person' })
+    else:
+        return render_template("error.html")
+
 
 
 

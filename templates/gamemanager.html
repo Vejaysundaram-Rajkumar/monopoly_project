@@ -122,7 +122,7 @@
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 1em;
-}
+    }
 
 .popup button {
     background-color: #4CAF50;
@@ -154,7 +154,48 @@
             z-index: 1;
         }
         /* end of buy prop css */
+        /* paypop css starts  */
+        .paypopup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                z-index: 2;
+            }
+        .paypopup select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        }
 
+        .paypopup button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        .paypopup button:hover {
+        background-color: #45a049;
+        }
+
+        .paypopup h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        }
+/* paypopup css ends */
         /* Style the alert */
         .alert {
         padding: 20px;
@@ -208,12 +249,14 @@
         
         <div class="title-bar">Game Options</div>
         <!-- Alert container -->
-    <div id="insufficientBalanceAlert" class="alert">
+        <strong>
+    <div id="Alertcontent" class="alert">
         <span class="closebtn" onclick="closeAlert()">&times;</span>
-        <strong>Insufficient Balance!</strong> You don't have enough funds to buy this property.
+        <p id="Alerttext"></p>
     </div>
+</strong>
         <div class="options">
-            <button class="option" style="background-image: url('static/images/rent.png')">
+            <button class="option" onclick="showpayPopup()" style="background-image: url('static/images/rent.png')">
                 Pay Rent
             </button>
             <button class="option" style="background-image: url('static/images/pay_government.png')">
@@ -263,23 +306,66 @@
         </form>
         <button class="close" onclick="hidePopup()">Cancel</button>
     </div>
+    <div id="paypopup" class="paypopup">
+        
+        <h2>Pay The Property Rent</h2>
+        <form id="payForm">
+            <label for="payplayer">Select Player:</label>
+            <select id="payplayer" name="payplayer">
+                <!-- Populate with player names dynamically -->
+                {% for player in player_names %}
+                    <option value="{{ player }}">{{ player }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="paypropertyType">Select Property Type:</label>
+            <select id="paypropertyType" name="paypropertyType" onchange="updatepayPropertyOptions()">
+                <option value="0">--Select the property type--</option>
+                <option value="utilities">Utility</option>
+                <option value="cities">Site</option>
+                <option value="trains">Train Station</option>
+            </select>
+
+            <label for="payspecificProperty">Select Specific Property:</label>
+            <select id="payspecificProperty" name="payspecificProperty">
+                <!-- Options will be dynamically updated based on propertyType -->
+            </select>
+            <label for="diceRoll" id="diceRollLabel" style="display: none;">Dice Roll:</label>
+            <input type="number" id="diceRoll" style="display: none;" min="2" max="12">
+            <button type="button" onclick="payrent()">Pay Rent</button>
+            
+        </form>
+        <button class="close" onclick="hidepayPopup()">Cancel</button>
+    </div>
     <div id="overlay" class="overlay"></div>
     
 </body>
 <script>
-    // Dummy data, replace with actual data from Flask
+    const paysiteOptions = {{ paysite_name | safe }};
+    const paytrainOptions = {{ paytrain_name | safe }};
+    const payutilityOptions = {{ payutilities_name | safe }};
     const siteOptions = {{ site_names | safe }};
     const trainOptions = {{ train_names | safe }};
     const utilityOptions = {{ utilities_names | safe }};
+
     function showPopup() {
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-        function hidePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+    function hidePopup() {
+        document.getElementById('popup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+    function showpayPopup() {
+            document.getElementById('paypopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
+
+    function hidepayPopup() {
+        document.getElementById('paypopup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
     function updatePropertyOptions() {
         const propertyType = document.getElementById('propertyType').value;
         const specificPropertyDropdown = document.getElementById('specificProperty');
@@ -302,15 +388,90 @@
             }
         }
     }
+    function updatepayPropertyOptions() {
+        const propertyType = document.getElementById('paypropertyType').value;
+        const specificPropertyDropdown = document.getElementById('payspecificProperty');
+
+        // Clear existing options
+        specificPropertyDropdown.innerHTML = '';
+
+        // Add new options based on the property type
+        if (propertyType === 'cities') {
+            for (const site of paysiteOptions) {
+                specificPropertyDropdown.innerHTML += `<option value="${site}">${site}</option>`;
+            }
+            diceRollLabel.style.display = 'none';
+            diceRoll.style.display = 'none';
+        } 
+        else if (propertyType === 'trains') {
+            for (const train of paytrainOptions) {
+                specificPropertyDropdown.innerHTML += `<option value="${train}">${train}</option>`;
+            }
+            diceRollLabel.style.display = 'none';
+            diceRoll.style.display = 'none';
+        }
+         else if (propertyType === 'utilities') {
+            for (const utility of payutilityOptions) {
+                specificPropertyDropdown.innerHTML += `<option value="${utility}">${utility}</option>`;
+            }
+            // Show the dice roll input for utilities
+            diceRollLabel.style.display = 'block';
+            diceRoll.style.display = 'block';
+        }
+        
+    }
     // Show the alert
-function showInsufficientBalanceAlert() {
-    document.getElementById('insufficientBalanceAlert').style.display = 'block';
+function showAlert(message) {
+    document.getElementById('Alerttext').innerHTML=message;
+    document.getElementById('Alertcontent').style.display = 'block';
 }
 
 // Close the alert
 function closeAlert() {
-    document.getElementById('insufficientBalanceAlert').style.display = 'none';
+    document.getElementById('Alertcontent').style.display = 'none';
 }
+
+function payrent() {
+    const playerName = document.getElementById('payplayer').value;
+    const propertyType = document.getElementById('paypropertyType').value;
+    const specificProperty = document.getElementById('payspecificProperty').value;
+    const diceRoll = document.getElementById('diceRoll').value;
+    
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/pay_rent',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+            playerName: playerName,
+            propertyType: propertyType,
+            specificProperty: specificProperty,
+            diceRoll: diceRoll
+        }),
+        success: function (data) {
+            if (data.status === 'error' && data.message === 'insufficient funds') {
+                const text="Insufficient Balance! You dont have enough funds to buy this property."
+                // Show the insufficient balance alert
+                showAlert(text);
+            } else if (data.status === 'error' && data.message === 'Same Person') {
+                
+                const text="Same Person!! You cannot pay rent to yourself!!"
+                showAlert(text);
+
+            } else {
+                alert('RENT PAID SUCESSFULLY!!');
+                // Reload the page after a successful update
+                location.reload();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Redirect or handle the error as needed
+            console.error('Error:', errorThrown);
+        }
+    });
+    hidepayPopup();
+}
+
 function buyProperty() {
     const playerName = document.getElementById('player').value;
     const propertyType = document.getElementById('propertyType').value;
@@ -328,12 +489,15 @@ function buyProperty() {
         }),
         success: function (data) {
             if (data.status === 'error' && data.message === 'insufficient funds') {
+                
+                const text="Insufficient Balance! You dont have enough funds to buy this property."
                 // Show the insufficient balance alert
-                showInsufficientBalanceAlert();
+                showAlert(text);
             } else if (data.status === 'error') {
                 // Handle other error cases if needed
                 console.error('Error:', data.message);
             } else {
+                alert('PROPERTY SUCESSFULLY!!');
                 // Reload the page after a successful update
                 location.reload();
             }

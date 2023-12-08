@@ -314,9 +314,9 @@ def newgame(n,players,gamename):
 def building_func(playername,p_type,prop_name):
     con=connect_db()
     cursor=con.cursor()
-    up1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
-    val1 = (prop_name,)
-    cursor.execute(up1, val1)
+    u1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
+    va1 = (prop_name,)
+    cursor.execute(u1, va1)
     owner = cursor.fetchone()
 
     if(owner[0]=="bank"):
@@ -368,65 +368,70 @@ def payingrent_func(payer,p_type,prop_name,diceno):
     val1 = (prop_name,)
     cursor.execute(up1, val1)
     owner = cursor.fetchone()
-    if(owner[0]!="bank"):            
-        #get the current rent bracket 
-        up2 = "SELECT current_rent FROM {} WHERE name = ?".format(p_type)
-        val2 = (prop_name,)
-        cursor.execute(up2, val2)
-        rent_set=cursor.fetchone()    
-        #get the rent money in that particular bracket
-        up2 = "SELECT {} FROM {} WHERE name = ?".format(rent_set[0]),(p_type)
-        val2 = (prop_name,)
-        cursor.execute(up2, val2)
-        rent_money=cursor.fetchone()        
-        if(p_type=="utilities" and diceno!=0):
-            util_rent=rent_money[0]*diceno
-        else:
-            pass
-        #Get the balance money of the payer whom has to pay the rent
-        cursor.execute("SELECT current_money FROM players WHERE name = ?",(payer,))
-        payer_balance=cursor.fetchone()                
-        
-        #getting the balance of the owner of the property
-        cursor.execute("SELECT current_money FROM players WHERE name = ?",(owner[0],))
-        owner_balance=cursor.fetchone()
-        print(owner_balance)
-        if(p_type=="utilities"):
-            if(util_rent<payer_balance[0]):
-                print(owner_balance)
-                p_balance=payer_balance[0]-rent_money
-                o_balance=owner_balance[0]+rent_money
-                #updating the payer's balance amount into is database
-                up1 = "UPDATE players SET current_money = ? WHERE name = ?"
-                val2 = (p_balance, payer)
-                cursor.execute(up1, val2)
-                #updating the payer's balance amount into is database
-                up2 = "UPDATE players SET current_money = ? WHERE name = ?"
-                val3 = (o_balance,owner[0])
-                cursor.execute(up2, val3)
-                con.commit()
+    print(owner)
+    if(owner[0]!="bank"):
+        if(owner[0]==payer):
+            b=-2
+            return b
+        else:            
+            #get the current rent bracket 
+            up2 = "SELECT current_rent FROM {} WHERE name = ?".format(p_type)
+            val2 = (prop_name,)
+            cursor.execute(up2, val2)
+            rent_set=cursor.fetchone()    
+            #get the rent money in that particular bracket
+            up2 = "SELECT {} FROM {} WHERE name = ?".format(rent_set[0],p_type)
+            val2 = (prop_name,)
+            cursor.execute(up2, val2)
+            rent_money=cursor.fetchone()        
+            if(p_type=="utilities" and diceno!=0):
+                util_rent=rent_money[0]*diceno
             else:
-                b=-1
-                return b
-        else:        
-            if(rent_money[0]<payer_balance[0]):
-                p_balance=payer_balance[0]-rent_money[0]
-                o_balance=owner_balance[0]+rent_money[0]
-                #updating the payer's balance amount into is database
-                up1 = "UPDATE players SET current_money = ? WHERE name = ?"
-                val2 = (p_balance, payer)
-                cursor.execute(up1, val2)
-                #updating the payer's balance amount into is database
-                up2 = "UPDATE players SET current_money = ? WHERE name = ?"
-                val3 = (o_balance,owner[0])
-                cursor.execute(up2, val3)
-                con.commit()    
-            else:
-                b=-1
-                return b
-        b=1
-        con.close()
-        return b        
+                pass
+            #Get the balance money of the payer whom has to pay the rent
+            cursor.execute("SELECT current_money FROM players WHERE name = ?",(payer,))
+            payer_balance=cursor.fetchone()                
+            
+            #getting the balance of the owner of the property
+            cursor.execute("SELECT current_money FROM players WHERE name = ?",(owner[0],))
+            owner_balance=cursor.fetchone()
+            print(owner_balance)
+            if(p_type=="utilities"):
+                if(util_rent<payer_balance[0]):
+                    print(owner_balance)
+                    p_balance=payer_balance[0]-rent_money
+                    o_balance=owner_balance[0]+rent_money
+                    #updating the payer's balance amount into is database
+                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val2 = (p_balance, payer)
+                    cursor.execute(up1, val2)
+                    #updating the payer's balance amount into is database
+                    up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val3 = (o_balance,owner[0])
+                    cursor.execute(up2, val3)
+                    con.commit()
+                else:
+                    b=-1
+                    return b
+            else:        
+                if(rent_money[0]<payer_balance[0]):
+                    p_balance=payer_balance[0]-rent_money[0]
+                    o_balance=owner_balance[0]+rent_money[0]
+                    #updating the payer's balance amount into is database
+                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val2 = (p_balance, payer)
+                    cursor.execute(up1, val2)
+                    #updating the payer's balance amount into is database
+                    up2 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val3 = (o_balance,owner[0])
+                    cursor.execute(up2, val3)
+                    con.commit()    
+                else:
+                    b=-1
+                    return b
+            b=1
+            con.close()
+            return b        
     else:
         b=0
         return b

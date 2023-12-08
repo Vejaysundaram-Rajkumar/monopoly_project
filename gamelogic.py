@@ -477,7 +477,7 @@ def deletegame():
     up3 = "UPDATE trains SET Owner = 'bank'"
     cursor.execute(up3)
 
-    up4 = "UPDATE trains SET current_rate = 'rent_1T'"
+    up4 = "UPDATE trains SET current_rent = 'rent_1T'"
     cursor.execute(up4)
     
     up5 = "UPDATE cities SET current_rent = 'rent'"
