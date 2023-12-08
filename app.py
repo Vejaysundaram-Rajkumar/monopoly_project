@@ -23,9 +23,6 @@ def connect_db():
 def index():
     return render_template("index.html")
 
-@app.route('/deletegame')
-def deletegame():
-    return render_template("error.html")
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -125,8 +122,20 @@ def pay_rent():
     else:
         return render_template("error.html")
 
-
-
+@app.route('/deletegame', methods=['POST'])
+def deletegame():
+    data = request.get_json()
+    txt = data.get('txt')
+    try:
+        if(txt==1):
+            gamelogiccopy.deletegame()
+            return jsonify({'status': 'success',})
+        else:
+            return jsonify({'status': 'error',})
+    except:
+        error_title="Database updation errorr!!"
+        error_message="Some error occured while deleting the game!!"
+        return render_template("error.html",error_title=error_title,error_message=error_message)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")

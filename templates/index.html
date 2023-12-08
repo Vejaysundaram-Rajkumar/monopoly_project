@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Menu</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -136,8 +137,7 @@
 
     <main>
         <div class="options">
-            <button class="option" onclick="showOverlay()">New Game</button>
-            <button class="option" onclick="location.href='/deletegame'">Delete the saved game</button>
+            <button class="option" onclick="newgame()">New Game</button>
             <button class="option" onclick="location.href='continue-game.html'">Continue Game</button>
             <button class="option" onclick="window.close()">Exit Game</button>
         </div>
@@ -175,6 +175,44 @@
     </div>
 
     <script>
+function newgame(){
+    deleteGame();
+}
+
+function deleteGame() {
+    var txt;
+    if (confirm("Are you sure you want to delete the game saved?")) {
+    txt = 1;
+    } else {
+    txt = 0;
+    }
+    if(txt == 1) {
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/deletegame',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+           txt:txt 
+        }),
+        success: function (data) {
+            if (data.status === 'error' ) {
+                const text="Unable to delete the saved game!!"
+                alert(text);
+            } else {
+                alert('Game deleted sucessfully!!');    
+                showOverlay();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Redirect or handle the error as needed
+            console.error('Error:', errorThrown);
+        }
+    });
+
+}
+}
+
     function showOverlay() {
         document.getElementById('overlay').style.display = 'flex';
         document.getElementById('step1').classList.add('active');

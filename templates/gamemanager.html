@@ -234,7 +234,13 @@
     <header>
         <h1>Monopoly Game Manager - {{gamename}}</h1>
     </header>
-
+     <!-- Alert container -->
+        <strong>
+    <div id="Alertcontent" class="alert">
+        <span class="closebtn" onclick="closeAlert()">&times;</span>
+        <p id="Alerttext"></p>
+    </div>
+</strong>
     <main>
         <div class="sidebar">
             <div class="sidebar-title">Player Info</div>
@@ -248,13 +254,7 @@
                 
         
         <div class="title-bar">Game Options</div>
-        <!-- Alert container -->
-        <strong>
-    <div id="Alertcontent" class="alert">
-        <span class="closebtn" onclick="closeAlert()">&times;</span>
-        <p id="Alerttext"></p>
-    </div>
-</strong>
+       
         <div class="options">
             <button class="option" onclick="showpayPopup()" style="background-image: url('static/images/rent.png')">
                 Pay Rent

@@ -57,11 +57,11 @@ def trains_rent_check():
     for player_info in player_station_counts:
         player_id, station_count = player_info
         if station_count == 2:
-            cursor.execute("UPDATE trains SET current_rate = 'rent_2T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+            cursor.execute("UPDATE trains SET current_rent = 'rent_2T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
         elif station_count == 3:
-            cursor.execute("UPDATE trains SET current_rate = 'rent_3T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+            cursor.execute("UPDATE trains SET current_rent = 'rent_3T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
         elif station_count == 4:
-            cursor.execute("UPDATE trains SET current_rate = 'rent_4T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
+            cursor.execute("UPDATE trains SET current_rent = 'rent_4T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
         con.commit()
 
 #printing the results of the game 
@@ -362,6 +362,11 @@ def building_func(playername,p_type,prop_name):
         return b
 
 def payingrent_func(payer,p_type,prop_name,diceno):
+    if(diceno==""):
+        diceno='0'
+        diceno=int(diceno)
+    else:
+        diceno=int(diceno)
     con=connect_db()
     cursor=con.cursor()
     up1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
@@ -383,9 +388,12 @@ def payingrent_func(payer,p_type,prop_name,diceno):
             up2 = "SELECT {} FROM {} WHERE name = ?".format(rent_set[0],p_type)
             val2 = (prop_name,)
             cursor.execute(up2, val2)
-            rent_money=cursor.fetchone()        
+            rent_money=cursor.fetchone()
+                    
             if(p_type=="utilities" and diceno!=0):
+                print(rent_money[0])
                 util_rent=rent_money[0]*diceno
+                print("rent",util_rent)
             else:
                 pass
             #Get the balance money of the payer whom has to pay the rent
@@ -399,13 +407,13 @@ def payingrent_func(payer,p_type,prop_name,diceno):
             if(p_type=="utilities"):
                 if(util_rent<payer_balance[0]):
                     print(owner_balance)
-                    p_balance=payer_balance[0]-rent_money
-                    o_balance=owner_balance[0]+rent_money
+                    p_balance=payer_balance[0]-util_rent
+                    o_balance=owner_balance[0]+util_rent
                     #updating the payer's balance amount into is database
                     up1 = "UPDATE players SET current_money = ? WHERE name = ?"
                     val2 = (p_balance, payer)
                     cursor.execute(up1, val2)
-                    #updating the payer's balance amount into is database
+                    #updating the owner's balance amount into is database
                     up2 = "UPDATE players SET current_money = ? WHERE name = ?"
                     val3 = (o_balance,owner[0])
                     cursor.execute(up2, val3)
