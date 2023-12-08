@@ -109,7 +109,7 @@ def result_func():
 
     # Sort players by net worth
     net_worths.sort(key=lambda x: x[2], reverse=True)
-
+    
     # Print the leaderboard
     print("Leaderboard:")
     print("Player Rank | Player Name | Net Worth")
@@ -223,39 +223,6 @@ def startgame(gname):
             else:
                 print("The property is not yet bought from the bank yet by any players!!")
 
-        elif(ch==4):
-            con=connect_db()
-            cursor=con.cursor()
-            payto=int(input("Choose the correct option\n1.Pay the Government\n2.Government pays you"))
-            if(payto==1):
-                amount=int(input("Enter the Fine or loss amount occured:"))
-                payer=int(input("Enter the player number who has to pay:"))
-                #getting the balance of the player
-                cursor.execute("SELECT current_money FROM players WHERE id= ?",(payer,))
-                b_balance=cursor.fetchone()
-                if(amount<=b_balance[0]):
-                    payer_bal=b_balance[0]-amount
-                    #updating the builder's balance amount into is database
-                    up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                    val2 = (payer_bal, payer)
-                    cursor.execute(up1, val2)
-                    con.commit()
-                else:
-                    print("INSUFFICIENT BALANCE FOR THE PLAYER!!!")
-            elif(payto==2):
-                amount=int(input("Enter the Reward amount occured:"))
-                payer=int(input("Enter the player number who has gets the Reward amount:"))
-                #getting the balance of the player
-                cursor.execute("SELECT current_money FROM players WHERE id= ?",(payer,))
-                b_balance=cursor.fetchone()
-                payer_bal=b_balance[0]+amount
-                #updating the builder's balance amount into is database
-                up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                val2 = (payer_bal, payer)
-                cursor.execute(up1, val2)
-                con.commit()
-            else:
-                print("Enter an valid choice!!")
         elif(ch==5):
             result_func()
             con=connect_db()
