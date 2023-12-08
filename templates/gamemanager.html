@@ -196,6 +196,88 @@
         margin-bottom: 15px;
         }
 /* paypopup css ends */
+        /* paybank popup css */
+        .popupbank {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                z-index: 2;
+            }
+        .popupbank select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        }
+
+        .popupbank button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        .popupbank button:hover {
+        background-color: #45a049;
+        }
+
+        .popupbank h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        }
+        /* REWARD FROM BANK CSS START*/
+        .popupreward {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                z-index: 2;
+            }
+        .popupreward select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        }
+
+        .popupreward button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        .popupreward button:hover {
+        background-color: #45a049;
+        }
+
+        .popupreward h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        }
         /* Style the alert */
         .alert {
         padding: 20px;
@@ -225,6 +307,11 @@
         .close{
         position: fixed;
         left:650px;
+        bottom:20px;
+        }
+        .closeb{
+        position: fixed;
+        left:550px;
         bottom:20px;
         }
     </style>
@@ -259,10 +346,10 @@
             <button class="option" onclick="showpayPopup()" style="background-image: url('static/images/rent.png')">
                 Pay Rent
             </button>
-            <button class="option" style="background-image: url('static/images/pay_government.png')">
+            <button class="option" onclick="showpopupbank()" style="background-image: url('static/images/pay_government.png')">
                 Pay the Bank
             </button>
-            <button class="option" style="background-image: url('static/images/reward.png')">
+            <button class="option" onclick="showpopupreward()" style="background-image: url('static/images/reward.png')">
                 Get Reward from Bank
             </button>
             <button class="option" onclick="showPopup()" style="background-image: url('static/images/buy.png')">
@@ -337,6 +424,46 @@
         </form>
         <button class="close" onclick="hidepayPopup()">Cancel</button>
     </div>
+    <div id="popupbank" class="popupbank">
+        
+        <h2>Pay the Bank</h2>
+        <form id="BankForm">
+            <label for="bplayer">Select Player:</label>
+            <select id="bplayer" name="bplayer">
+                <!-- Populate with player names dynamically -->
+                {% for player in player_names %}
+                    <option value="{{ player }}">{{ player }}</option>
+                {% endfor %}
+            </select>
+            <label for="amount">Select the amount to be paid:</label>
+            <input type="number" id="amount" name="amount">
+                
+            
+            <button type="button" onclick="paybank()">Pay Bank</button>
+            
+        </form>
+        <button class="closeb" onclick="hidepopupbank() ">Cancel</button>
+    </div>
+    <div id="popupreward" class="popupreward">
+        
+        <h2>Reward from the Bank</h2>
+        <form id="RewardForm">
+            <label for="rplayer">Select Player:</label>
+            <select id="rplayer" name="rplayer">
+                <!-- Populate with player names dynamically -->
+                {% for player in player_names %}
+                    <option value="{{ player }}">{{ player }}</option>
+                {% endfor %}
+            </select>
+            <label for="ramount">Select the amount to be paid:</label>
+            <input type="number" id="ramount" name="ramount">
+                
+            
+            <button type="button" onclick="rewardbank()">Get Reward</button>
+            
+        </form>
+        <button class="closeb" onclick="hidepopupreward() ">Cancel</button>
+    </div>
     <div id="overlay" class="overlay"></div>
     
 </body>
@@ -361,11 +488,27 @@
             document.getElementById('paypopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
-
     function hidepayPopup() {
         document.getElementById('paypopup').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     }
+    function showpopupbank() {
+            document.getElementById('popupbank').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+    function hidepopupbank() {
+        document.getElementById('popupbank').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+    function showpopupreward() {
+            document.getElementById('popupreward').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+    function hidepopupreward() {
+        document.getElementById('popupreward').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
     function updatePropertyOptions() {
         const propertyType = document.getElementById('propertyType').value;
         const specificPropertyDropdown = document.getElementById('specificProperty');
@@ -510,6 +653,68 @@ function buyProperty() {
     hidePopup();
 }
 
+function paybank() {
+    const playerName = document.getElementById('bplayer').value;
+    const amt = document.getElementById('amount').value;
+    
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/pay_bank',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+            playerName: playerName,
+            amt: amt
+        }),
+        success: function (data) {
+            if (data.status === 'error' && data.message === 'insufficient funds') {
+                const text="Insufficient Balance! You dont have enough funds to buy this property."
+                // Show the insufficient balance alert
+                showAlert(text);
+            }  else {
+                alert('AMOUNT PAID SUCESSFULLY!!');
+                // Reload the page after a successful update
+                location.reload();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Redirect or handle the error as needed
+            console.error('Error:', errorThrown);
+        }
+    });
+    hidepopupbank();
+}
+function rewardbank() {
+    const playerName = document.getElementById('rplayer').value;
+    const amt = document.getElementById('ramount').value;
+    
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/reward_bank',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+            playerName: playerName,
+            amt: amt
+        }),
+        success: function (data) {
+            if (data.status === 'error' ) {
+                const text="Database error"
+                // Show the insufficient balance alert
+                showAlert(text);
+            }  else {
+                alert('AMOUNT REWARDED SUCESSFULLY!!');
+                // Reload the page after a successful update
+                location.reload();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Redirect or handle the error as needed
+            console.error('Error:', errorThrown);
+        }
+    });
+    hidepopupreward();
+}
 
 </script>
 

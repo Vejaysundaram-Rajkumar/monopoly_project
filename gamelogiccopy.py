@@ -444,6 +444,47 @@ def payingrent_func(payer,p_type,prop_name,diceno):
         b=0
         return b
 
+def pay_bank_func(payer,amount):
+    if(amount==""):
+        amount=0
+    else:
+        amount=int(amount)
+    con=connect_db()
+    cursor=con.cursor()
+    #getting the balance of the player
+    cursor.execute("SELECT current_money FROM players WHERE name= ?",(payer,))
+    b_balance=cursor.fetchone()
+    if(amount<=b_balance[0]):
+        payer_bal=b_balance[0]-amount
+        #updating the builder's balance amount into is database
+        up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+        val2 = (payer_bal, payer)
+        cursor.execute(up1, val2)
+        con.commit()
+        b=1
+        return b
+    else:
+        b=-1
+        return b
+    
+def reward_bank_func(player, amount):
+    if(amount==""):
+        amount=0
+    else:
+        amount=int(amount)
+    con=connect_db()
+    cursor=con.cursor()
+    #getting the balance of the player
+    cursor.execute("SELECT current_money FROM players WHERE name= ?",(player,))
+    b_balance=cursor.fetchone()
+    payer_bal=b_balance[0]+amount
+    #updating the builder's balance amount into is database
+    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+    val2 = (payer_bal, player)
+    cursor.execute(up1, val2)
+    con.commit()
+    b=1
+    return b
 
 #Deleting the created game.
 def deletegame():

@@ -122,6 +122,35 @@ def pay_rent():
     else:
         return render_template("error.html")
 
+@app.route('/pay_bank', methods=['POST'])
+def pay_bank():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    amt=data.get('amt')
+    build_db=gamelogiccopy.pay_bank_func(player_name, amt)
+    print(build_db)    
+    if(build_db==-1):
+        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+    elif(build_db==1):
+        return jsonify({'status': 'success'})
+    else:
+        return render_template("error.html")
+
+@app.route('/reward_bank', methods=['POST'])
+def reward_bank():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    amt=data.get('amt')
+    build_db=gamelogiccopy.reward_bank_func(player_name, amt)
+    print(build_db)    
+    if(build_db==1):
+        return jsonify({'status': 'success'})
+    else:
+        return jsonify({'status': 'error'})
+
+
+
+
 @app.route('/deletegame', methods=['POST'])
 def deletegame():
     data = request.get_json()
