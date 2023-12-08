@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS cities (
     id INTEGER PRIMARY KEY,
     name TEXT,
     group_id INTEGER,
-    buy_cost INTEGER,
+    purchase_price INTEGER,
     mortgage_value INTEGER,
     house_cost INTEGER,
     hotel_cost INTEGER,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS cities (
 
 ''')
 cursor.execute('''
-INSERT INTO cities (id, name, group_id,buy_cost, mortgage_value,house_cost, hotel_cost,rent, rent_H1, rent_H2, rent_H3, rent_H4, rent_Hotel,Owner,current_rent)
+INSERT INTO cities (id, name, group_id,purchase_price, mortgage_value,house_cost, hotel_cost,rent, rent_H1, rent_H2, rent_H3, rent_H4, rent_Hotel,Owner,current_rent)
 VALUES 
     (1, 'Old Kent Road', 1, 600000, 300000, 500000, 500000, 20000, 100000, 300000, 900000, 1600000, 2500000,'bank','rent'),
     (2, 'White Chappel Road', 1, 600000, 300000, 500000, 500000, 40000, 200000, 600000, 1800000, 3200000, 4500000,'bank','rent'),

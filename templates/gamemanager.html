@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monopoly Game Manager</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -197,7 +198,7 @@
         </div>
     </main>
     <div id="popup" class="popup">
-        <h2>Build Property</h2>
+        <h2>Buy an  Property</h2>
         <form id="buildForm">
             <label for="player">Select Player:</label>
             <select id="player" name="player">
@@ -210,9 +211,9 @@
             <label for="propertyType">Select Property Type:</label>
             <select id="propertyType" name="propertyType" onchange="updatePropertyOptions()">
                 <option value="0">--Select the property type--</option>
-                <option value="utility">Utility</option>
-                <option value="site">Site</option>
-                <option value="train">Train Station</option>
+                <option value="utilities">Utility</option>
+                <option value="cities">Site</option>
+                <option value="trains">Train Station</option>
             </select>
 
             <label for="specificProperty">Select Specific Property:</label>
@@ -247,15 +248,15 @@
         specificPropertyDropdown.innerHTML = '';
 
         // Add new options based on the property type
-        if (propertyType === 'site') {
+        if (propertyType === 'cities') {
             for (const site of siteOptions) {
                 specificPropertyDropdown.innerHTML += `<option value="${site}">${site}</option>`;
             }
-        } else if (propertyType === 'train') {
+        } else if (propertyType === 'trains') {
             for (const train of trainOptions) {
                 specificPropertyDropdown.innerHTML += `<option value="${train}">${train}</option>`;
             }
-        } else if (propertyType === 'utility') {
+        } else if (propertyType === 'utilities') {
             for (const utility of utilityOptions) {
                 specificPropertyDropdown.innerHTML += `<option value="${utility}">${utility}</option>`;
             }
@@ -263,8 +264,24 @@
     }
 
     function buyProperty() {
+        const playerName = document.getElementById('player').value;
+        const propertyType = document.getElementById('propertyType').value;
+        const specificProperty = document.getElementById('specificProperty').value;
+
+        // Make an AJAX request to Flask
+        $.ajax({
+            type: 'POST',
+            url: '/buy_property',  // Update the route based on your Flask setup
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({
+                playerName: playerName,
+                propertyType: propertyType,
+                specificProperty: specificProperty
+            }),
+        });
         hidePopup();
     }
+     
 </script>
 
 </html>

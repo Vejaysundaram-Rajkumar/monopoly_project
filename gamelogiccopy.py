@@ -52,7 +52,7 @@ def trains_rent_check():
 
     # Fetch the player IDs and station counts
     player_station_counts = cursor.fetchall()
-    print(player_station_counts)
+    #print(player_station_counts)
     # Update current_rate for each player based on the station count
     for player_info in player_station_counts:
         player_id, station_count = player_info
@@ -227,80 +227,11 @@ def startgame(gname):
             else:
                 print("Invalid choice!!.")
         elif(ch==2):
-            p_type=int(input("Enter the type of the Property:\n1.SITE\n2.Utitility\n3.Railways\n"))
-            if(p_type>=1 and p_type<=3):
-                buyer=int(input("Enter the player number who wants to buy: "))
-                siteno=int(input("Enter the id number of the property:"))
-                con=connect_db()
-                cursor=con.cursor()
-                if(p_type==1):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM cities WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                elif(p_type==2):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM utilities WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                elif(p_type==3):
-                    #Finding the owner of the property  
-                    cursor.execute("SELECT Owner FROM trains WHERE id = ?",(siteno,))
-                    owner=cursor.fetchone()
-                if(owner[0]=="bank"):
-                    if(p_type==1):
-                        #Get the cost of the property from cities table
-                        cursor.execute("SELECT buy_cost FROM cities WHERE id = ?",(siteno,))
-                        prop_cost=cursor.fetchone()
-                    elif(p_type==2):
-                        #Get the cost of the property from utilities table
-                        cursor.execute("SELECT purchase_price FROM utilities WHERE id = ?",(siteno,))
-                        prop_cost=cursor.fetchone()
-
-                    elif(p_type==3):
-                        #Get the cost of the property from trains table
-                        cursor.execute("SELECT purchase_price FROM trains WHERE id = ?",(siteno,))
-                        prop_cost=cursor.fetchone()
-                         
-                    #getting the balance of the player
-                    cursor.execute("SELECT current_money FROM players WHERE id= ?",(buyer,))
-                    b_balance=cursor.fetchone()
-                    
-                    if(prop_cost[0]<=b_balance[0]):
-                        buyer_balance=b_balance[0]-prop_cost[0]
-                        #updating the buyer's balance amount into is database
-                        up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                        val2 = (buyer_balance, buyer)
-                        cursor.execute(up1, val2)
-                        #updating the owner of the property into is database                        
-                        cursor.execute("SELECT name FROM players WHERE id = ?",(buyer,))
-                        owner_name=cursor.fetchone()
-                        if(p_type==1):
-                            up2 = "UPDATE cities SET Owner = ? WHERE id = ?"
-                            val3 = (owner_name[0],siteno)
-                            cursor.execute(up2, val3)
-                            con.commit()
-                        elif(p_type==2):
-                            up2 = "UPDATE utilities SET Owner = ? WHERE id = ?"
-                            val3 = (owner_name[0],siteno)
-                            cursor.execute(up2, val3)
-                            con.commit()
-                            utility_rent_check()
-                        elif(p_type==3):
-                            up2 = "UPDATE trains SET Owner = ? WHERE id = ?"
-                            val3 = (owner_name[0],siteno)
-                            cursor.execute(up2, val3)
-                            con.commit()        
-                            trains_rent_check()    
-                    else:
-                        print("Insufficient balance for the player!!")
-                        con.close()
-                else:
-                    print("This property is not available and it cannot be bought by you!!!")
-            else: 
-                print("INVALID CHOICE!!")
-            
+            pass
         elif(ch==3):
             b_type=int(input("Enter the type of Construction:\n1.House\n2.Hotel\n"))
             con=connect_db()
+            cursor=con.cursor()
             cursor=con.cursor()
             buyer=int(input("Enter the player number who wants to build:"))
             siteno=int(input("Enter the id number of the property in which you want to build:"))
@@ -456,6 +387,60 @@ def newgame(n,players,gamename):
             print(err_message)
             return False
     return True
+
+
+def building_func(playername,p_type,prop_name):
+    con=connect_db()
+    cursor=con.cursor()
+    up1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
+    val1 = (prop_name,)
+    cursor.execute(up1, val1)
+    owner = cursor.fetchone()
+
+    if(owner[0]=="bank"):
+        #getting the cost of the property    
+        up2 = "SELECT purchase_price FROM {} WHERE name = ?".format(p_type)
+        val2 = (prop_name,)
+        cursor.execute(up2, val2)
+        prop_cost = cursor.fetchone()
+       
+        #getting the balance of the player
+        cursor.execute("SELECT current_money FROM players WHERE name= ?",(playername,))
+        b_balance=cursor.fetchone()
+        
+        if(prop_cost[0]<=b_balance[0]):
+            buyer_balance=b_balance[0]-prop_cost[0]
+            #updating the buyer's balance amount into is database
+            up3 = "UPDATE players SET current_money = ? WHERE name = ?"
+            val3 = (buyer_balance, playername)
+            cursor.execute(up3, val3)
+
+            #updating the owner to the player name for that property
+            up4 = "UPDATE {} SET Owner = ? WHERE name = ?".format(p_type)
+            val4 = (playername, prop_name)
+            cursor.execute(up4, val4)
+            con.commit()
+
+            if(p_type=="utilities"):
+                utility_rent_check()
+            elif(p_type=="trains"):
+                trains_rent_check()
+            else:
+                pass
+        else:
+            b=-1
+            con.close()
+            return b
+        b=1
+        con.close()
+        return b
+    else:
+        b=0
+        con.close()
+        return b
+
+
+
 #Deleting the created game.
 def deletegame():
     con=connect_db()
