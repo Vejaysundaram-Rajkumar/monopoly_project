@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 import hashlib
 import locale
+import json
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
 import gamelogiccopy
 
@@ -41,7 +42,24 @@ def submit():
         cursor.execute("SELECT current_money FROM players")
         payer_balance=cursor.fetchall()
         player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
-        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info)
+        
+        cursor.execute("SELECT name FROM cities")
+        cities_list=cursor.fetchall()
+        site_names = [name[0] for name in cities_list]
+        
+        cursor.execute("SELECT name FROM utilities")
+        utilities_list=cursor.fetchall()
+        utilities_names = [name[0] for name in utilities_list]
+        
+        cursor.execute("SELECT name FROM trains")
+        trains_list=cursor.fetchall()
+        train_names = [name[0] for name in trains_list]
+
+        site_name=json.dumps(site_names)
+        utilities_name=json.dumps(utilities_names)
+        train_name=json.dumps(train_names)
+
+        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name)
     else:
         print("Database updation errorr!!")
         return render_template("error.html")
