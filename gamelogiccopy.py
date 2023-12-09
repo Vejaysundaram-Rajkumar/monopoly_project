@@ -15,7 +15,7 @@ def transaction_func(t_type,player_name,amount,pr_type,propt_name,dice_roll):
     cursor.execute("SELECT counter FROM game")
     num=cursor.fetchone()
     no=int(num[0])+1
-    cursor.execute(" INSERT INTO transactions (id, transaction_type, player_name,amount,property_type,specific_property,dice_roll) VALUES (?,?,?,?,?,?,?)",(no,t_type,player_name,amount,pr_type,propt_name,dice_roll))
+    cursor.execute(" INSERT INTO transactions (id, transaction_type, player_name,amount,property_type,specific_property,dice_roll) VALUES (?,?,?,?,?,?,?)",(no,t_type,player_name,locale.currency(amount, grouping=True),pr_type,propt_name,dice_roll))
     upc = "UPDATE game SET counter = ? "
     val = (no,)
     cursor.execute(upc, val)

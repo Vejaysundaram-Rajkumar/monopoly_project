@@ -7,7 +7,7 @@ import json
 from flask import jsonify
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
 import gamelogiccopy
-
+import traceback
 
 #Creating an object for the flask called app
 app = Flask(__name__)
@@ -80,8 +80,11 @@ def manager():
 
 
             return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name,transaction_list=transaction_list)
-    except:
-        error_message="Some error occured while updating the database!!"
+    except Exception as e:
+        
+        print(f"Exception: {e}")
+        traceback.print_exc()
+        error_message = "Some error occurred while updating the database!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
     
 @app.route('/submit', methods=['POST'])

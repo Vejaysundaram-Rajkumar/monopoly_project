@@ -468,6 +468,7 @@ def deletegame():
     con=connect_db()
     cursor=con.cursor()
     cursor.execute("DELETE FROM players")
+    cursor.execute("DELETE FROM transactions")
     up1 = "UPDATE cities SET Owner = 'bank'"
     cursor.execute(up1)
     
@@ -488,6 +489,8 @@ def deletegame():
 
     up7 = "UPDATE game SET endgame = 0"
     cursor.execute(up7)
+    up8 = "UPDATE game SET counter = 0"
+    cursor.execute(up8)
     con.commit()
     print("The Saved game is sucessfully deleted!!")
     con.close()
