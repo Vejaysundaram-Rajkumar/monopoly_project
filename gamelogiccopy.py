@@ -453,45 +453,47 @@ def reward_bank_func(player, amount):
 def deletegame():
     con=connect_db()
     cursor=con.cursor()
-    cursor.execute("DELETE FROM players")
-    up1 = "UPDATE cities SET Owner = 'bank'"
-    cursor.execute(up1)
-    
-    up2 = "UPDATE utilities SET Owner = 'bank'"
-    cursor.execute(up2)
-    
-    up3 = "UPDATE trains SET Owner = 'bank'"
-    cursor.execute(up3)
+    cursor.execute("SELECT DISTINCT game_name FROM players")
+    gname=cursor.fetchone()
+    print(gname)
+    if(gname==None):
+        return None
+    else:
+        cursor.execute("DELETE FROM players")
+        up1 = "UPDATE cities SET Owner = 'bank'"
+        cursor.execute(up1)
+        
+        up2 = "UPDATE utilities SET Owner = 'bank'"
+        cursor.execute(up2)
+        
+        up3 = "UPDATE trains SET Owner = 'bank'"
+        cursor.execute(up3)
 
-    up4 = "UPDATE trains SET current_rent = 'rent_1T'"
-    cursor.execute(up4)
-    
-    up5 = "UPDATE cities SET current_rent = 'rent'"
-    cursor.execute(up5)
-    
-    up6 = "UPDATE utilities SET current_rent = 'rent_multiplier_1'"
-    cursor.execute(up6)
+        up4 = "UPDATE trains SET current_rent = 'rent_1T'"
+        cursor.execute(up4)
+        
+        up5 = "UPDATE cities SET current_rent = 'rent'"
+        cursor.execute(up5)
+        
+        up6 = "UPDATE utilities SET current_rent = 'rent_multiplier_1'"
+        cursor.execute(up6)
 
-    up7 = "UPDATE game SET endgame = 0"
-    cursor.execute(up7)
-    con.commit()
-    print("The Saved game is sucessfully deleted!!")
-    con.close()
+        up7 = "UPDATE game SET endgame = 0"
+        cursor.execute(up7)
+        con.commit()
+        print("The Saved game is sucessfully deleted!!")
+        con.close()
+        return True
 
 
 #continue an saved game
-def continue_game():
+def continuegame():
     con=connect_db()
     cursor=con.cursor()
     cursor.execute("SELECT DISTINCT game_name FROM players")
     names=cursor.fetchone()
     if(names==None):
-        print("NO SAVED GAMES EXIST!!. Create an new game:)")
+        return None
     else:
-        print("THE SAVED GAME NAME IS ",names[0],"\n DO YOU WANT TO CONTINUE THIS GAME OR CREATE A NEW GAME?\n1.CONTINUE GAME\n2.NEW GAME :")
-        con=int(input())
-        if(con==1):
-            startgame(names[0])
-        else:
-            deletegame()
-            newgame()
+        b=names[0]
+        return b

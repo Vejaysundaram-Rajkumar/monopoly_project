@@ -137,9 +137,9 @@
 
     <main>
         <div class="options">
-            <button class="option" onclick="newgame()">New Game</button>
+            <button class="option" onclick="showOverlay()">New Game</button>
             <button class="option" onclick="deleteGame()">Delete the saved game</button>
-            <button class="option" onclick="location.href='continue-game.html'">Continue Game</button>
+            <button class="option" onclick="location.href='/manager'">Continue Game</button>
             <button class="option" onclick="window.close()">Exit Game</button>
         </div>
     </main>
@@ -176,10 +176,7 @@
     </div>
 
     <script>
-function newgame(){
-    deleteGame();
-    showOverlay();
-}
+
 
 function deleteGame() {
     var txt;
@@ -198,10 +195,12 @@ function deleteGame() {
            txt:txt 
         }),
         success: function (data) {
-            if (data.status === 'error' ) {
-                const text="Unable to delete the saved game!!"
-                alert(text);
-            } else {
+            if (data.status === 'error' && data.message === 'no game found') {
+                const errorMessage = encodeURIComponent("No saved games to be deleted");
+                window.location.href = `/error?status=No%20SavedGames&message=${errorMessage}`;
+                
+            } else if(data.status === 'success' ){
+
                 alert('Game deleted sucessfully!!');    
                 
             }

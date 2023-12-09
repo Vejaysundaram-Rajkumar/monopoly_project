@@ -23,10 +23,68 @@ def connect_db():
 def index():
     return render_template("index.html")
 
+@app.route('/manager')
+def manager():
+    try:
+        con=connect_db()
+        cursor=con.cursor()
+        cursor.execute("SELECT DISTINCT game_name FROM players")
+        gname=cursor.fetchone()
+        if(gname==None):
+            error_message="There is no Saved games found in the database!"
+            return redirect(url_for('error', status='No Saved Games found!!', message=error_message))
+        else:
+            gamename=gname[0]
+            cursor.execute("SELECT name FROM players")
+            player_name=cursor.fetchall()
+            player_names= [name[0] for name in player_name]
+            num_players=len(player_names)
+            cursor.execute("SELECT current_money FROM players")
+            payer_balance=cursor.fetchall()
+            player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
+            
+            cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
+            cities_list=cursor.fetchall()
+            site_names = [name[0] for name in cities_list]
+            
+            cursor.execute("SELECT name FROM utilities WHERE Owner= ?",("bank",))
+            utilities_list=cursor.fetchall()
+            utilities_names = [name[0] for name in utilities_list]
+            
+            cursor.execute("SELECT name FROM trains WHERE Owner= ?",("bank",))
+            trains_list=cursor.fetchall()
+            train_names = [name[0] for name in trains_list]
 
+            site_name=json.dumps(site_names)
+            utilities_name=json.dumps(utilities_names)
+            train_name=json.dumps(train_names)
+
+            cursor.execute("SELECT name FROM cities WHERE Owner!= ?",("bank",))
+            cities_list=cursor.fetchall()
+            paysite_names = [name[0] for name in cities_list]
+            
+            cursor.execute("SELECT name FROM utilities WHERE Owner!= ?",("bank",))
+            utilities_list=cursor.fetchall()
+            payutilities_names = [name[0] for name in utilities_list]
+            
+            cursor.execute("SELECT name FROM trains WHERE Owner!= ?",("bank",))
+            trains_list=cursor.fetchall()
+            paytrain_names = [name[0] for name in trains_list]
+
+            
+            paysite_name=json.dumps(paysite_names)
+            payutilities_name=json.dumps(payutilities_names)
+            paytrain_name=json.dumps(paytrain_names)
+
+
+            return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name)
+    except:
+        error_message="Some error occured while updating the database!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+    
 @app.route('/submit', methods=['POST'])
 def submit():
-    #gamelogiccopy.deletegame()
+    gamelogiccopy.deletegame()
     gamename = request.form.get('gamename')
     num_players = int(request.form.get('numPlayers'))
     player_names = [request.form.get(f'player{i+1}') for i in range(num_players)]
@@ -36,51 +94,10 @@ def submit():
     try:
         gamelogiccopy.newgame(num_players, player_names,gamename)
         print("Database updated sucessfully")
-        con=connect_db()
-        cursor=con.cursor()
-        cursor.execute("SELECT current_money FROM players")
-        payer_balance=cursor.fetchall()
-        player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
-        
-        cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
-        cities_list=cursor.fetchall()
-        site_names = [name[0] for name in cities_list]
-        
-        cursor.execute("SELECT name FROM utilities WHERE Owner= ?",("bank",))
-        utilities_list=cursor.fetchall()
-        utilities_names = [name[0] for name in utilities_list]
-        
-        cursor.execute("SELECT name FROM trains WHERE Owner= ?",("bank",))
-        trains_list=cursor.fetchall()
-        train_names = [name[0] for name in trains_list]
-
-        site_name=json.dumps(site_names)
-        utilities_name=json.dumps(utilities_names)
-        train_name=json.dumps(train_names)
-
-        cursor.execute("SELECT name FROM cities WHERE Owner!= ?",("bank",))
-        cities_list=cursor.fetchall()
-        paysite_names = [name[0] for name in cities_list]
-        
-        cursor.execute("SELECT name FROM utilities WHERE Owner!= ?",("bank",))
-        utilities_list=cursor.fetchall()
-        payutilities_names = [name[0] for name in utilities_list]
-        
-        cursor.execute("SELECT name FROM trains WHERE Owner!= ?",("bank",))
-        trains_list=cursor.fetchall()
-        paytrain_names = [name[0] for name in trains_list]
-
-        
-        paysite_name=json.dumps(paysite_names)
-        payutilities_name=json.dumps(payutilities_names)
-        paytrain_name=json.dumps(paytrain_names)
-
-
-        return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name)
+        return redirect('/manager')
     except:
-        error_title="Database updation errorr!!"
         error_message="Some error occured while updating the database!!"
-        return render_template("error.html",error_title=error_title,error_message=error_message)
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 
 
@@ -157,14 +174,24 @@ def deletegame():
     txt = data.get('txt')
     try:
         if(txt==1):
-            gamelogiccopy.deletegame()
-            return jsonify({'status': 'success',})
+            st=gamelogiccopy.deletegame()
+            if(st!=None):
+                return jsonify({'status': 'success',})
+            else:
+                print("gg")
+                return jsonify({'status': 'error', 'message': 'no game found'})
         else:
             return jsonify({'status': 'error',})
     except:
-        error_title="Database updation errorr!!"
         error_message="Some error occured while deleting the game!!"
-        return render_template("error.html",error_title=error_title,error_message=error_message)
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
+
+@app.route('/error')
+def error():
+    status = request.args.get('status', 'unknown')
+    message = request.args.get('message', 'An error occurred.')
+    return render_template('error.html', error_title=status, error_message=message), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
