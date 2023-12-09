@@ -178,7 +178,31 @@ def reward_bank():
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 
-
+@app.route('/buildingconstruction', methods=['POST'])
+def buildingconstruction():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    property_type = data.get('propertyType')
+    specific_property = data.get('specificProperty')
+    build_db=gamelogiccopy.buy_house_hotel_func(player_name, property_type, specific_property)
+    print(build_db)    
+    if(build_db==-1):
+        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+    elif(build_db==1):
+        return jsonify({'status': 'success'})
+    elif(build_db==0):
+        return jsonify({'status': 'error', 'message': 'player and owner mismatch! ' })
+    elif(build_db==-2):
+        return jsonify({'status': 'error', 'message': 'Required houses not yet built' })
+    elif(build_db==-3):
+        return jsonify({'status': 'error', 'message': 'Property not yet bought' })
+    elif(build_db==4):
+        return jsonify({'status': 'error', 'message': 'maximum house is built!' })
+    elif(build_db==5):
+        return jsonify({'status': 'error', 'message': 'maximum hotel is built!' })
+    else:
+        error_message="Some error occured while paying the rent!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/deletegame', methods=['POST'])
 def deletegame():

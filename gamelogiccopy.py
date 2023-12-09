@@ -108,6 +108,112 @@ def result_func():
     
     return net_worths
 
+def buy_house_hotel_func(buyer,b_type,prop_name):
+    #function la b_type is used as int ..aana b_type string aa varum paathuko da
+    #same for buyer too
+    #siteno --> prop_name
+    con=connect_db()
+    cursor=con.cursor()
+    cursor=con.cursor()
+    #get the current rent bracket 
+    cursor.execute("SELECT current_rent FROM cities WHERE name = ?",(prop_name,))
+    rent_set=cursor.fetchone()
+    #print(rent_set)
+    #Finding the owner of the property  
+    cursor.execute("SELECT Owner FROM cities WHERE name = ?",(prop_name,))
+    owner=cursor.fetchone()
+
+    if(owner[0]!="bank"):
+        # Checking if the player is the owner of the property that he/she tries to build house or hotel
+        if(owner[0]==buyer):
+            #if maximum is reached then returning the message for the builder
+            if(rent_set[0]!="rent_H4" and b_type=='house'):
+                #getting the next rent bracket  
+                if(rent_set[0]=="rent"):
+                    next_rent="rent_H1"
+                elif(rent_set[0]=="rent_H1"):
+                    next_rent="rent_H2"
+                elif(rent_set[0]=="rent_H2"):
+                        next_rent="rent_H3"
+                elif(rent_set[0]=="rent_H3"):
+                    next_rent="rent_H4"
+
+                #Getting the cost for building an house
+                cursor.execute("SELECT house_cost FROM cities WHERE name = ?",(prop_name,))
+                Hbuild_cost=cursor.fetchone()
+
+                #getting the balance of the player
+                cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
+                b_balance=cursor.fetchone()
+
+                if(Hbuild_cost[0]<=b_balance[0]):
+                    builder_balance=b_balance[0]-Hbuild_cost[0]
+                    #updating the builder's balance amount into is database
+                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val2 = (builder_balance, buyer)
+                    cursor.execute(up1, val2)
+
+                    #updating the owner of the property into is database                        
+                    up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
+                    val3 = (next_rent,prop_name)
+                    cursor.execute(up2, val3)
+                    con.commit()
+                    b=1
+                    transaction_func("built house",buyer,Hbuild_cost[0],"site",prop_name,0)
+                    return b
+                else:
+                    b=-1
+                    con.close()
+                    return b
+            elif(b_type=='hotel' and rent_set[0]=='rent_H4'):
+                next_rent="rent_Hotel"
+                #Getting the cost for building an house
+                cursor.execute("SELECT hotel_cost FROM cities WHERE name = ?",(prop_name,))
+                Hbuild_cost=cursor.fetchone()
+                #getting the balance of the player
+                cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
+                b_balance=cursor.fetchone()
+
+                if(Hbuild_cost[0]<=b_balance[0]):
+                    builder_balance=b_balance[0]-Hbuild_cost[0]
+                    #updating the builder's balance amount into is database
+                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                    val2 = (builder_balance, buyer)
+                    cursor.execute(up1, val2)
+
+                    #updating the owner of the property into is database                        
+                    up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
+                    val3 = (next_rent,prop_name)
+                    cursor.execute(up2, val3)
+                    con.commit()
+                    b=1
+                    transaction_func("built hotel",buyer,Hbuild_cost[0],"site",prop_name,0)
+                    return b
+                else:
+                    print("Insufficient balance for the player!!")
+                    con.close()
+                    b=-1
+                    return b
+            elif(b_type=='hotel' and rent_set[0]!="rent_H4"):
+                print("REQUIRED AMOUNT OF HOUSES IS NOT BUILT YET IN THIS PROPERTY!!")
+                b=-2
+                return b
+            elif(b_type=='hotel' and rent_set[0]=="rent_Hotel"):
+                print("NO MORE HOTEL CAN BE BUILT IN THIS PROPERTY!!")
+                b=5
+                return b
+            else:
+                print("NO MORE HOUSES CAN BE BUILT IN THIS PROPERTY!!")
+                b=4
+                return b
+        else:
+            print("The owner of the property and the builder mismatched!!")
+            b=0
+            return b
+    else:
+        b=-3
+        print("The property is not yet bought from the bank yet by any players!!")
+        return b
 #Starting an new game
 def startgame(gname):
     p=True
@@ -117,107 +223,10 @@ def startgame(gname):
         print(" 1:Pay Rent\n 2: Buy an Property or Utility\n3:Build an HOUSE or an HOTEL\n4:Pay FINE TO THE GOVERNMENT OR GET REWARD FROM THE GOVERNMENT\n5:End the Game and give the winner\n")
         ch=int(input("ENTER ACTION TO BE DONE:"))
         if(ch==3):
-            b_type=int(input("Enter the type of Construction:\n1.House\n2.Hotel\n"))
-            con=connect_db()
-            cursor=con.cursor()
-            cursor=con.cursor()
-            buyer=int(input("Enter the player number who wants to build:"))
-            siteno=int(input("Enter the id number of the property in which you want to build:"))
-            #get the current rent bracket 
-            cursor.execute("SELECT current_rent FROM cities WHERE id = ?",(siteno,))
-            rent_set=cursor.fetchone()
-            #print(rent_set)
-            #Finding the owner of the property  
-            cursor.execute("SELECT Owner FROM cities WHERE id = ?",(siteno,))
-            owner=cursor.fetchone()
-
-            if(owner!="bank"):
-                # Finding the owner's id  of the property
-                cursor.execute("SELECT name FROM players WHERE id = ?",(buyer,))
-                owner_name=cursor.fetchone()
-                if(owner==owner_name):
-                    #if maximum is reached then returning the message for the builder
-                    if(rent_set[0]!="rent_H4" and b_type==1):
-                        #getting the next rent bracket  
-                        if(rent_set[0]=="rent"):
-                            next_rent="rent_H1"
-                        elif(rent_set[0]=="rent_H1"):
-                            next_rent="rent_H2"
-                        elif(rent_set[0]=="rent_H2"):
-                                next_rent="rent_H3"
-                        elif(rent_set[0]=="rent_H3"):
-                            next_rent="rent_H4"
-
-                        #Getting the cost for building an house
-                        cursor.execute("SELECT house_cost FROM cities WHERE id = ?",(siteno,))
-                        Hbuild_cost=cursor.fetchone()
-
-                        #getting the balance of the player
-                        cursor.execute("SELECT current_money FROM players WHERE id= ?",(buyer,))
-                        b_balance=cursor.fetchone()
-
-                        if(Hbuild_cost[0]<=b_balance[0]):
-                            builder_balance=b_balance[0]-Hbuild_cost[0]
-                            #updating the builder's balance amount into is database
-                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                            val2 = (builder_balance, buyer)
-                            cursor.execute(up1, val2)
-
-                            #updating the owner of the property into is database                        
-                            up2 = "UPDATE cities SET current_rent = ? WHERE id = ?"
-                            val3 = (next_rent,siteno)
-                            cursor.execute(up2, val3)
-                            con.commit()
-                        else:
-                            print("Insufficient balance for the player!!")
-                            con.close()
-                    elif(b_type==2 and rent_set[0]=='rent_H4'):
-                        next_rent="rent_Hotel"
-                        #Getting the cost for building an house
-                        cursor.execute("SELECT house_cost FROM cities WHERE id = ?",(siteno,))
-                        Hbuild_cost=cursor.fetchone()
-                        #getting the balance of the player
-                        cursor.execute("SELECT current_money FROM players WHERE id= ?",(buyer,))
-                        b_balance=cursor.fetchone()
-
-                        if(Hbuild_cost[0]<=b_balance[0]):
-                            builder_balance=b_balance[0]-Hbuild_cost[0]
-                            #updating the builder's balance amount into is database
-                            up1 = "UPDATE players SET current_money = ? WHERE id = ?"
-                            val2 = (builder_balance, buyer)
-                            cursor.execute(up1, val2)
-
-                            #updating the owner of the property into is database                        
-                            up2 = "UPDATE cities SET current_rent = ? WHERE id = ?"
-                            val3 = (next_rent,siteno)
-                            cursor.execute(up2, val3)
-                            con.commit()
-                        else:
-                            print("Insufficient balance for the player!!")
-                            con.close()
-                    elif(b_type==2 and rent_set[0]!="rent_H4"):
-                        print("REQUIRED AMOUNT OF HOUSES IS NOT BUILT YET IN THIS PROPERTY!!")
-                    elif(b_type==2 and rent_set[0]=="rent_Hotel"):
-                        print("NO MORE HOTEL CAN BE BUILT IN THIS PROPERTY!!")
-                    else:
-                        print("NO MORE HOUSES CAN BE BUILT IN THIS PROPERTY!!")
-                else:
-                    print("The owner of the property and the builder mismatched!!")
-            else:
-                print("The property is not yet bought from the bank yet by any players!!")
+            pass
 
         elif(ch==5):
-            result_func()
-            con=connect_db()
-            cursor=con.cursor()
-            id_no=1
-            value=1
-            up1 = "UPDATE game SET endgame = ? WHERE id = ?"
-            val2 = (value,id_no)
-            cursor.execute(up1, val2)
-            con.commit()
-            con.close()
-            exit()
+            pass
         else:
             print("Invalid Choice!..Please try again")
 #checking if the game is there or not

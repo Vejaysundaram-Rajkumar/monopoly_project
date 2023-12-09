@@ -314,7 +314,7 @@ def startgame(gname):
             #Finding the owner of the property  
             cursor.execute("SELECT Owner FROM cities WHERE id = ?",(siteno,))
             owner=cursor.fetchone()
-
+            print(owner)
             if(owner!="bank"):
                 # Finding the owner's id  of the property
                 cursor.execute("SELECT name FROM players WHERE id = ?",(buyer,))
