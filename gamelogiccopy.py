@@ -9,22 +9,17 @@ def connect_db():
     connection = sqlite3.connect('gamedetails.db')
     return connection
 
-#checking if the gamename is already in used or not
-#def checkgamename(gname):
+def transaction_func(t_type,player_name,amount,pr_type,propt_name,dice_roll):
     con=connect_db()
     cursor=con.cursor()
-    cursor.execute("SELECT count(*) FROM players WHERE game_name = ?",(gname,))
-    n=cursor.fetchone()
+    cursor.execute("SELECT counter FROM game")
+    num=cursor.fetchone()
+    no=int(num[0])+1
+    cursor.execute(" INSERT INTO transactions (id, transaction_type, player_name,amount,property_type,specific_property,dice_roll) VALUES (?,?,?,?,?,?,?)",(no,t_type,player_name,amount,pr_type,propt_name,dice_roll))
+    upc = "UPDATE game SET counter = ? "
+    val = (no,)
+    cursor.execute(upc, val)
     con.commit()
-    con.close()
-    #print(n)
-    if(n[0]>=1):
-        #print("Game name already in use!!")
-        return False
-    else:
-        #print("Game Created :)")
-        #print(gname)
-        return True
 
 def utility_rent_check():
     con=connect_db()
@@ -305,7 +300,7 @@ def building_func(playername,p_type,prop_name):
             val4 = (playername, prop_name)
             cursor.execute(up4, val4)
             con.commit()
-
+            transaction_func("buy",playername,prop_cost[0],p_type,prop_name,0)
             if(p_type=="utilities"):
                 utility_rent_check()
             elif(p_type=="trains"):
@@ -354,7 +349,6 @@ def payingrent_func(payer,p_type,prop_name,diceno):
             rent_money=cursor.fetchone()
                     
             if(p_type=="utilities" and diceno!=0):
-                print(rent_money[0])
                 util_rent=rent_money[0]*diceno
                 print("rent",util_rent)
             else:
@@ -380,7 +374,8 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     up2 = "UPDATE players SET current_money = ? WHERE name = ?"
                     val3 = (o_balance,owner[0])
                     cursor.execute(up2, val3)
-                    con.commit()
+                    con.commit()         
+                    transaction_func("pay_rent",payer,util_rent,p_type,prop_name,diceno)
                 else:
                     b=-1
                     return b
@@ -396,7 +391,8 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     up2 = "UPDATE players SET current_money = ? WHERE name = ?"
                     val3 = (o_balance,owner[0])
                     cursor.execute(up2, val3)
-                    con.commit()    
+                    con.commit()
+                    transaction_func("pay_rent",payer,rent_money[0],p_type,prop_name,diceno)    
                 else:
                     b=-1
                     return b
@@ -424,6 +420,7 @@ def pay_bank_func(payer,amount):
         val2 = (payer_bal, payer)
         cursor.execute(up1, val2)
         con.commit()
+        transaction_func("pay_bank",payer,amount,"","",0)
         b=1
         return b
     else:
@@ -446,6 +443,7 @@ def reward_bank_func(player, amount):
     val2 = (payer_bal, player)
     cursor.execute(up1, val2)
     con.commit()
+    transaction_func("reward",player,amount,"","",0)
     b=1
     return b
 
@@ -460,6 +458,7 @@ def deletegame():
         return None
     else:
         cursor.execute("DELETE FROM players")
+        cursor.execute("DELETE FROM transactions")
         up1 = "UPDATE cities SET Owner = 'bank'"
         cursor.execute(up1)
         
@@ -480,6 +479,9 @@ def deletegame():
 
         up7 = "UPDATE game SET endgame = 0"
         cursor.execute(up7)
+
+        up8 = "UPDATE game SET counter = 0"
+        cursor.execute(up8)
         con.commit()
         print("The Saved game is sucessfully deleted!!")
         con.close()

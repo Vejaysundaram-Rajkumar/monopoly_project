@@ -7,9 +7,10 @@ cursor = conn.cursor()
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS game(
     id INTEGER PRIMARY KEY,
-    endgame INTEGER
+    endgame INTEGER,
+    counter INTEGER
 )
 ''')
-cursor.execute(''' INSERT INTO game (id,endgame) VALUES (1,0)  ''')
+cursor.execute(''' INSERT INTO game (id,endgame,counter) VALUES (1,0,0)  ''')
 conn.commit()
 conn.close()

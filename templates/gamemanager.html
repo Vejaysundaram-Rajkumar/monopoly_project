@@ -314,6 +314,82 @@
         left:550px;
         bottom:20px;
         }
+        /* transaction display css start  */
+        .transaction-history {
+    background-color: #0ab0da;
+    border: 1px solid #bdc3c7;
+    padding: 10px;
+    border-radius: 5px;
+    position: fixed;
+    top:120px; /* Adjust the top position as needed */
+    right: 20px; /* Adjust the right position as needed */
+    width: 300px; /* Adjust the width as needed */
+    height: 78vh; /* Adjust the height as needed */
+    overflow-y: auto; /* Enable scrolling if needed */
+}
+
+.transactions-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.transactions-list li {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+}
+
+/* Styles for different transaction types */
+
+.transactions-list li.pay-rent {
+    background-color: #e74c3c;
+    color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.transactions-list li.reward {
+    background-color: #2ecc71;
+    color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.transactions-list li.pay-bank {
+    background-color: #e74c3c;
+    color: #fff;
+    animation: fadeIn 0.5s ease-in-out, shake 0.5s ease-in-out;
+}
+
+.transactions-list li.buy-property {
+    background-color: #3498db;
+    color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animation for shaking effect */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25%, 75% {
+        transform: translateX(-5px);
+    }
+    50% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
     </style>
 </head>
 <body>
@@ -363,6 +439,22 @@
             </button>
         </div>
     </main>
+    <div id="transaction-history" class="transaction-history">
+        <h1>Transaction Records</h1>
+    <ul id="transactions-list" class="transactions-list">
+    {% for transaction in transaction_list %}
+        {% if transaction[1] == 'buy' %}
+            <p>{{ transaction[2] }} bought the property "{{ transaction[5] }}" for {{ transaction[3] }}.</p>
+        {% elif transaction[1] == 'pay_rent' %}
+            <p>{{ transaction[2] }} paid rent of {{ transaction[3] }} to {{ transaction[5] }} for the property "{{ transaction[6] }}" with a dice roll of {{ transaction[7] }}.</p>
+        {% elif transaction[1] == 'reward' %}
+            <p>{{ transaction[2] }} received a reward of {{ transaction[3] }} from the bank.</p>
+        {% elif transaction[1] == 'pay_bank' %}
+            <p>{{ transaction[2] }} paid {{ transaction[3] }} to the bank.</p>
+        {% endif %}
+    {% endfor %}
+</ul>
+    </div>
     <div id="popup" class="popup">
         
         <h2>Buy an  Property</h2>
@@ -601,8 +693,8 @@ function payrent() {
                 const text="Same Person!! You cannot pay rent to yourself!!"
                 showAlert(text);
 
-            } else {
-                alert('RENT PAID SUCESSFULLY!!');
+            } else if (data.status === 'success'){
+            
                 // Reload the page after a successful update
                 location.reload();
             }

@@ -37,6 +37,8 @@ def manager():
             gamename=gname[0]
             cursor.execute("SELECT name FROM players")
             player_name=cursor.fetchall()
+            cursor.execute("SELECT * FROM transactions")
+            transaction_list=cursor.fetchall()
             player_names= [name[0] for name in player_name]
             num_players=len(player_names)
             cursor.execute("SELECT current_money FROM players")
@@ -77,7 +79,7 @@ def manager():
             paytrain_name=json.dumps(paytrain_names)
 
 
-            return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name)
+            return render_template("gamemanager.html",gamename=gamename,num_of_players=num_players,player_info=player_info,player_names=player_names,site_names=site_name,train_names=train_name,utilities_names=utilities_name,paysite_name=paysite_name,payutilities_name=payutilities_name,paytrain_name=paytrain_name,transaction_list=transaction_list)
     except:
         error_message="Some error occured while updating the database!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
@@ -116,7 +118,8 @@ def buy_property():
     elif(build_db==0):
         return jsonify({'status': 'error', 'message': 'bought' })
     else:
-        return render_template("error.html")
+        error_message="Some error occured while buying the property!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/pay_rent', methods=['POST'])
 def pay_rent():
@@ -137,7 +140,8 @@ def pay_rent():
     elif(build_db==-2):
         return jsonify({'status': 'error', 'message': 'Same Person' })
     else:
-        return render_template("error.html")
+        error_message="Some error occured while paying the rent!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/pay_bank', methods=['POST'])
 def pay_bank():
@@ -151,7 +155,8 @@ def pay_bank():
     elif(build_db==1):
         return jsonify({'status': 'success'})
     else:
-        return render_template("error.html")
+        error_message="Some error occured while paying the bank!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/reward_bank', methods=['POST'])
 def reward_bank():
@@ -163,7 +168,8 @@ def reward_bank():
     if(build_db==1):
         return jsonify({'status': 'success'})
     else:
-        return jsonify({'status': 'error'})
+        error_message="Some error occured while transwering the reward!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 
 
