@@ -14,11 +14,11 @@
             background-position:center;
             background-position-y: 470px; 
             background-repeat: no-repeat;
-            background-color: rgba(239, 86, 86, 0.8); /* Adjust the alpha value for opacity */
+            background-color: #1097f0; /* Adjust the alpha value for opacity */
         }
         header {
-            background-color: #333;
-            color: #fff;
+            background-color: #1097f0;
+            color: #000000;
             text-align: center;
             padding: 1em;
         }
@@ -30,9 +30,10 @@
         }
 
         .title-bar {
-            background-color: #3498db;
+            background-color: #ffffff;
             color: #fff;
             padding: 1em;
+            border-radius: 4%;
             font-size: 1.5em;
         }
 
@@ -66,17 +67,23 @@
     }
     /* for the left hand side player info display css */
         .sidebar {
-            background-color: #3498db;
-            color: #fff;
-            width: 200px;
-            height: 70vh; /* Invert the rectangle */
+            
+            background-color: #bdc3c7;
+            border: 1px solid #000000;
+            padding: 10px;
+            border-radius: 5px;
+            height: 550px;
+            width: 290px;
             display: flex;
             position: fixed;
-            left:100px;
+            left:20px;
+            bottom: 20px;
             flex-direction: column;
             align-items: center;
             justify-content: left;
             text-align: center;
+            
+             /* Adjust the height as needed */
         }
 
         .player-outstanding {
@@ -161,7 +168,7 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background-color: #fff;
+                background-color: #1097f0;
                 padding: 20px;
                 border-radius: 5px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -281,7 +288,7 @@
         /* Style the alert */
         .alert {
         padding: 20px;
-        background-color: #f44336; /* Red background color */
+        background-color: #E20613; /* Red background color */
         color: white;
         margin-bottom: 15px;
         display: none;
@@ -316,8 +323,8 @@
         }
         /* transaction display css start  */
         .transaction-history {
-    background-color: #076981;
-    border: 1px solid #bdc3c7;
+    background-color: #bdc3c7;
+    border: 1px solid #000000;
     padding: 10px;
     border-radius: 5px;
     position: fixed;
@@ -357,7 +364,7 @@
 }
 
 .transactions-list li.pay-bank {
-    background-color: #e74c3c;
+    background-color: #de1d08;
     color: #000000;
     font-weight: bold;
     animation: fadeIn 0.5s ease-in-out, shake 0.5s ease-in-out;
@@ -410,7 +417,7 @@
 </strong>
     <main>
         <div class="sidebar">
-            <div class="sidebar-title">Player Info</div>
+            <div class="sidebar-title"><h2>Player Info</h2></div>
             {% for info in player_info %}
                 <div class="player-outstanding">
                     <div class="player-name">{{ info['name'] }}</div>
