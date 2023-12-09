@@ -85,7 +85,7 @@ def result_func():
                             WHEN c.current_rent = 'rent_Hotel' THEN 4 * house_cost + hotel_cost
                             ELSE 0
                         END), 0) AS houses_and_hotels_cost,
-            COALESCE(SUM(CASE WHEN c.Owner != 'bank' THEN c.buy_cost ELSE 0 END), 0) AS sites_cost,
+            COALESCE(SUM(CASE WHEN c.Owner != 'bank' THEN c.purchase_price ELSE 0 END), 0) AS sites_cost,
             COALESCE(SUM(CASE WHEN t.Owner != 'bank' THEN t.purchase_price ELSE 0 END), 0) AS trains_cost,
             COALESCE(SUM(CASE WHEN u.Owner != 'bank' THEN u.purchase_price ELSE 0 END), 0) AS utilities_cost
         FROM
@@ -112,7 +112,7 @@ def result_func():
 
     # Sort players by net worth
     net_worths.sort(key=lambda x: x[2], reverse=True)
-
+    print(net_worths)
     # Print the leaderboard
     print("Leaderboard:")
     print("Player Rank | Player Name | Net Worth")

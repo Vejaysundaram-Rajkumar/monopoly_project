@@ -104,8 +104,11 @@ def submit():
         error_message="Some error occured while updating the database!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
-
-
+@app.route('/endgame')
+def endgame():
+    result=gamelogiccopy.result_func()
+    winner_name = result[0][1]
+    return render_template('leaderboard.html',players=result,winner_name=winner_name)
 @app.route('/buy_property', methods=['POST'])
 def buy_property():
     data = request.get_json()

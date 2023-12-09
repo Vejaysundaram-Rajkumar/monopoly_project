@@ -31,10 +31,11 @@
 
         .title-bar {
             background-color: #ffffff;
-            color: #fff;
+            color: #000000;
             padding: 1em;
             border-radius: 4%;
             font-size: 1.5em;
+            font-weight: bolder;
         }
 
         .options {
@@ -442,7 +443,7 @@
             <button class="option" onclick="showPopup()" style="background-image: url('static/images/buy.png')">
                 Buy Property
             </button>
-            <button class="option" style="background-image: url('static/images/end.png')">
+            <button class="option" onclick="window.location.href = '/endgame'" style="background-image: url('static/images/end.png')">
                 End Game and Declare the  Winner
             </button>
             <button class="option" style="background-image: url('static/images/build.png')">

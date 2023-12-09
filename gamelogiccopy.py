@@ -77,7 +77,7 @@ def result_func():
                             WHEN c.current_rent = 'rent_Hotel' THEN 4 * house_cost + hotel_cost
                             ELSE 0
                         END), 0) AS houses_and_hotels_cost,
-            COALESCE(SUM(CASE WHEN c.Owner != 'bank' THEN c.buy_cost ELSE 0 END), 0) AS sites_cost,
+            COALESCE(SUM(CASE WHEN c.Owner != 'bank' THEN c.purchase_price ELSE 0 END), 0) AS sites_cost,
             COALESCE(SUM(CASE WHEN t.Owner != 'bank' THEN t.purchase_price ELSE 0 END), 0) AS trains_cost,
             COALESCE(SUM(CASE WHEN u.Owner != 'bank' THEN u.purchase_price ELSE 0 END), 0) AS utilities_cost
         FROM
@@ -100,25 +100,13 @@ def result_func():
     for player in player_info:
         player_id, player_name, current_money, houses_and_hotels_cost, sites_cost, trains_cost, utilities_cost = player
         net_worth = current_money + houses_and_hotels_cost + sites_cost + trains_cost + utilities_cost
+        net_worth=locale.currency(net_worth, grouping=True)
         net_worths.append((player_id, player_name, net_worth))
 
     # Sort players by net worth
     net_worths.sort(key=lambda x: x[2], reverse=True)
     
-    # Print the leaderboard
-    print("Leaderboard:")
-    print("Player Rank | Player Name | Net Worth")
-    for i, (player_id, player_name, net_worth) in enumerate(net_worths, 1):
-        print(f"{i:10} | {player_name:11} | {locale.currency(net_worth, grouping=True)}")
-
-    # Declare the winner and runner
-    if len(net_worths) >= 1:
-        winner_id, winner_name, winner_net_worth = net_worths[0]
-        print(f"\nWinner: Player {winner_name} (ID: {winner_id}) - Net Worth: {locale.currency(winner_net_worth, grouping=True)}")
-
-    if len(net_worths) >= 2:
-        runner_id, runner_name, runner_net_worth = net_worths[1]
-        print(f"Runner-up: Player {runner_name} (ID: {runner_id}) - Net Worth: {locale.currency(runner_net_worth, grouping=True)}")
+    return net_worths
 
 #Starting an new game
 def startgame(gname):
