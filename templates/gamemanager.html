@@ -537,7 +537,7 @@
         <form id="buildForm">
             <label for="player">Select Player:</label>
             <select id="player" name="player">
-                <!-- Populate with player names dynamically -->
+                 <!-- dynamic player names -->
                 {% for player in player_names %}
                     <option value="{{ player }}">{{ player }}</option>
                 {% endfor %}
@@ -553,7 +553,7 @@
 
             <label for="specificProperty">Select Specific Property:</label>
             <select id="specificProperty" name="specificProperty">
-                <!-- Options will be dynamically updated based on propertyType -->
+                <!-- Options will be dynamically updated  -->
             </select>
             
             <button type="button" onclick="buyProperty()">Buy</button>
@@ -567,7 +567,7 @@
         <form id="payForm">
             <label for="payplayer">Select Player:</label>
             <select id="payplayer" name="payplayer">
-                <!-- Populate with player names dynamically -->
+                 <!-- dynamic player names -->
                 {% for player in player_names %}
                     <option value="{{ player }}">{{ player }}</option>
                 {% endfor %}
@@ -583,7 +583,7 @@
 
             <label for="payspecificProperty">Select Specific Property:</label>
             <select id="payspecificProperty" name="payspecificProperty">
-                <!-- Options will be dynamically updated based on propertyType -->
+                <!-- Options will be dynamically updated  -->
             </select>
             <label for="diceRoll" id="diceRollLabel" style="display: none;">Dice Roll:</label>
             <input type="number" id="diceRoll" style="display: none;" min="2" max="12">
@@ -598,7 +598,7 @@
         <form id="BankForm">
             <label for="bplayer">Select Player:</label>
             <select id="bplayer" name="bplayer">
-                <!-- Populate with player names dynamically -->
+                 <!-- dynamic player names -->
                 {% for player in player_names %}
                     <option value="{{ player }}">{{ player }}</option>
                 {% endfor %}
@@ -618,7 +618,7 @@
         <form id="BuildhhForm">
             <label for="bhhplayer">Select Player:</label>
             <select id="bhhplayer" name="bhhplayer">
-                <!-- Populate with player names dynamically -->
+                <!-- dynamic player names -->
                 {% for player in player_names %}
                     <option value="{{ player }}">{{ player }}</option>
                 {% endfor %}
@@ -630,7 +630,7 @@
                 <option value="hotel">Hotel</option>
             </select>
             <select id="bhhspecificProperty" name="bhhspecificProperty">
-                <!-- Options will be dynamically updated based on propertyType -->
+                <!-- Options will be dynamically updated  -->
             </select>
             <button type="button" onclick="popupbhh()">Pay Bank</button>
             
@@ -644,7 +644,7 @@
         <form id="RewardForm">
             <label for="rplayer">Select Player:</label>
             <select id="rplayer" name="rplayer">
-                <!-- Populate with player names dynamically -->
+                <!-- dynamic player names  -->
                 {% for player in player_names %}
                     <option value="{{ player }}">{{ player }}</option>
                 {% endfor %}
@@ -719,7 +719,7 @@
         // Clear existing options
         specificPropertyDropdown.innerHTML = '';
 
-        // Add new options based on the property type
+        
         if (propertyType === 'cities') {
             for (const site of siteOptions) {
                 specificPropertyDropdown.innerHTML += `<option value="${site}">${site}</option>`;
@@ -741,7 +741,7 @@
         // Clear existing options
         specificPropertyDropdown.innerHTML = '';
 
-        // Add new options based on the property type
+        
         if (propertyType === 'cities') {
             for (const site of paysiteOptions) {
                 specificPropertyDropdown.innerHTML += `<option value="${site}">${site}</option>`;
@@ -808,23 +808,17 @@ function payrent() {
             diceRoll: diceRoll
         }),
         success: function (data) {
-            if (data.status === 'error' && data.message === 'insufficient funds') {
-                const text="Insufficient Balance! You dont have enough funds to buy this property."
-                // Show the insufficient balance alert
-                alert(text);
-            } else if (data.status === 'error' && data.message === 'Same Person') {
-                
-                const text="Same Person!! You cannot pay rent to yourself!!"
-                alert(text);
-
-            } else if (data.status === 'success'){
-                alert("Rent paid successfully!")
+            if (data.status === 'error' ) {
+                  // Show the error alert
+                alert(data.message);
+            } else {
+                alert("RENT PAID SUCCESSFULLY!!")
                 // Reload the page after a successful update
                 location.reload();
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // Redirect or handle the error as needed
+            // Redirect or handle the error
             console.error('Error:', errorThrown);
         }
     });
@@ -847,22 +841,17 @@ function buyProperty() {
             specificProperty: specificProperty
         }),
         success: function (data) {
-            if (data.status === 'error' && data.message === 'insufficient funds') {
-                
-                const text="Insufficient Balance! You dont have enough funds to buy this property."
-                // Show the insufficient balance alert
-                alert(text);
-            } else if (data.status === 'error') {
-                // Handle other error cases if needed
-                console.error('Error:', data.message);
-            } else {
-                alert('PROPERTY SUCESSFULLY!!');
+            if (data.status === 'error' ) {
+                  // Show the error alert
+                alert(data.message);
+            }  else {
+                alert('PROPERTY BOUGHT SUCESSFULLY!!');
                 // Reload the page after a successful update
                 location.reload();
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // Redirect or handle the error as needed
+            // Redirect or handle the error 
             console.error('Error:', errorThrown);
         }
     });
@@ -883,10 +872,9 @@ function paybank() {
             amt: amt
         }),
         success: function (data) {
-            if (data.status === 'error' && data.message === 'insufficient funds') {
-                const text="Insufficient Balance! You dont have enough funds to buy this property."
-                // Show the insufficient balance alert
-                alert(text);
+            if (data.status === 'error' ) {
+                // Show the error alert
+                alert(data.message);
             }  else {
                 alert('AMOUNT PAID SUCESSFULLY!!');
                 // Reload the page after a successful update
@@ -894,7 +882,7 @@ function paybank() {
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // Redirect or handle the error as needed
+            // Redirect or handle the error
             console.error('Error:', errorThrown);
         }
     });
@@ -916,13 +904,8 @@ function  popupbhh(){
             specificProperty: specificProperty
         }),
         success: function (data) {
-            if (data.status === 'error' && data.message === 'insufficient funds') {
-                
-                const text="Insufficient Balance! You dont have enough funds to buy this property."
-                // Show the insufficient balance alert
-                alert(text);
-            } else if (data.status === 'error') {
-                // Handle other error cases if needed
+            if (data.status === 'error') {
+                // Handle  error 
                 alert(data.message);
             } else {
                 alert('Construction Successfull!!');
@@ -931,7 +914,7 @@ function  popupbhh(){
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // Redirect or handle the error as needed
+            // Redirect or handle the error 
             console.error('Error:', errorThrown);
         }
     });
@@ -954,7 +937,7 @@ function rewardbank() {
         success: function (data) {
             if (data.status === 'error' ) {
                 const text="Database error"
-                // Show the insufficient balance alert
+                // Show the  alert
                 alert(text);
             }  else {
                 alert('AMOUNT REWARDED SUCESSFULLY!!');
@@ -963,7 +946,7 @@ function rewardbank() {
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // Redirect or handle the error as needed
+            // Redirect or handle the error
             console.error('Error:', errorThrown);
         }
     });

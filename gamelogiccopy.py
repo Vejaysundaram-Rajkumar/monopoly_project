@@ -109,6 +109,9 @@ def result_func():
     return net_worths
 
 def buy_house_hotel_func(buyer,b_type,prop_name):
+    if(prop_name==""):
+        b=-4
+        return b
     #function la b_type is used as int ..aana b_type string aa varum paathuko da
     #same for buyer too
     #siteno --> prop_name
@@ -267,6 +270,9 @@ def newgame(n,players,gamename):
 
 
 def building_func(playername,p_type,prop_name):
+    if(prop_name==""):
+        b=-2
+        return b
     con=connect_db()
     cursor=con.cursor()
     u1 = "SELECT Owner FROM {} WHERE name = ?".format(p_type)
@@ -317,6 +323,9 @@ def building_func(playername,p_type,prop_name):
         return b
 
 def payingrent_func(payer,p_type,prop_name,diceno):
+    if(prop_name==""):
+        b=-3
+        return b
     if(diceno==""):
         diceno='0'
         diceno=int(diceno)

@@ -118,7 +118,9 @@ def buy_property():
     build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)
     print(build_db)    
     if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to buy this property.' })
+    elif(build_db==-2):
+        return jsonify({'status': 'error', 'message': 'No property available right now!' })
     elif(build_db==1):
         return jsonify({'status': 'success'})
     elif(build_db==0):
@@ -138,7 +140,9 @@ def pay_rent():
     build_db=gamelogiccopy.payingrent_func(player_name, property_type, specific_property,diceRoll)
     print(build_db)    
     if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+        return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
+    elif(build_db==-3):
+        return jsonify({'status': 'error', 'message': 'No property available right now!' })
     elif(build_db==1):
         return jsonify({'status': 'success'})
     elif(build_db==0):
@@ -157,7 +161,7 @@ def pay_bank():
     build_db=gamelogiccopy.pay_bank_func(player_name, amt)
     print(build_db)    
     if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to buy this property.' })
     elif(build_db==1):
         return jsonify({'status': 'success'})
     else:
@@ -184,18 +188,21 @@ def buildingconstruction():
     player_name = data.get('playerName')
     property_type = data.get('propertyType')
     specific_property = data.get('specificProperty')
+    print(specific_property)
     build_db=gamelogiccopy.buy_house_hotel_func(player_name, property_type, specific_property)
     print(build_db)    
     if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds' })
+        return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
+    elif(build_db==-2):
+        return jsonify({'status': 'error', 'message': 'Required houses not yet built' })
     elif(build_db==1):
         return jsonify({'status': 'success'})
     elif(build_db==0):
         return jsonify({'status': 'error', 'message': 'player and owner mismatch! ' })
-    elif(build_db==-2):
-        return jsonify({'status': 'error', 'message': 'Required houses not yet built' })
     elif(build_db==-3):
         return jsonify({'status': 'error', 'message': 'Property not yet bought' })
+    elif(build_db==-4):
+        return jsonify({'status': 'error', 'message': 'No property available right now!' })
     elif(build_db==4):
         return jsonify({'status': 'error', 'message': 'maximum house is built!' })
     elif(build_db==5):
