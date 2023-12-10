@@ -182,6 +182,18 @@ def reward_bank():
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 
+@app.route('/collectsalary', methods=['POST'])
+def collectsalary():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    build_db=gamelogiccopy.collect_salary_func(player_name)
+    print(build_db)    
+    if(build_db==1):
+        return jsonify({'status': 'success'})
+    else:
+        error_message="Some error occured while transwering the reward!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
 @app.route('/buildingconstruction', methods=['POST'])
 def buildingconstruction():
     data = request.get_json()
@@ -210,6 +222,13 @@ def buildingconstruction():
     else:
         error_message="Some error occured while paying the rent!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
+
+
+
+
+
+
 
 @app.route('/deletegame', methods=['POST'])
 def deletegame():

@@ -10,9 +10,9 @@
             margin: 0;
             padding: 0;
             background-image: url('static/images/landing.png'); /* Replace with your background image path */
-            background-size: 50%;
+            background-size: 45%;
             background-position:center;
-            background-position-y: 470px; 
+            background-position-y: 500px; 
             background-repeat: no-repeat;
             background-color: #1097f0; /* Adjust the alpha value for opacity */
         }
@@ -30,12 +30,17 @@
         }
 
         .title-bar {
-            background-color: #ffffff;
+            background-color: #bdc3c7;
             color: #000000;
-            padding: 1em;
-            border-radius: 4%;
+            border-radius: 5%;
             font-size: 1.5em;
             font-weight: bolder;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            text-align: center;
+            gap: 1em;
+            margin-top: 2em;
+            background-size:30%;
         }
 
         .options {
@@ -360,7 +365,7 @@
         }
         .closeb{
         position: fixed;
-        left:550px;
+        left:520px;
         bottom:20px;
         }
         /* transaction display css start  */
@@ -429,6 +434,12 @@
     font-weight: bold;
     animation: fadeIn 0.5s ease-in-out;
 }
+.transactions-list li.salary {
+    background-color: #008f0a;
+    color: #0f0e0e;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in-out;
+}
 
 /* Animation for shaking effect */
 @keyframes shake {
@@ -454,6 +465,46 @@
     }
 }
 
+/* go buttton css start */
+.go-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1097f0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+.go-popup select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        }
+.go-popup  button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        .go-popup button:hover {
+        background-color: #45a049;
+        }
+
+        .go-popup h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -474,14 +525,16 @@
         </div>
                 
         
-        <div class="title-bar">Game Options
-            <button class="option"  onclick="sendPlayerName()" style="background-image: url('static/images/go.png')">
+        <div class="title-bar"><button class="option"  onclick="window.location.href = '/'" style="background-image: url('static/images/exit.png')">
+            Exit Game
+        </button><h3>Game Options</h3>
+            <button class="option go"  onclick="showPlayerInputPopup()" style="background-image: url('static/images/go.png')">
                 Go
             </button>
-            
         </div>
        
         <div class="options">
+            
             <button class="option" onclick="showpayPopup()" style="background-image: url('static/images/rent.png')">
                 Pay Rent
             </button>
@@ -507,7 +560,7 @@
         <ul id="transactions-list" class="transactions-list">
             {% for i in range(transaction_list|length - 1, -1, -1) %}
                 {% set transaction = transaction_list[i] %}
-                <li class="{% if transaction[1] == 'buy' %}buy-property{% elif transaction[1] == 'pay_rent' %}pay-rent{% elif transaction[1] == 'reward' %}reward{% elif transaction[1] == 'pay_bank' %}pay-bank{% elif transaction[1] == 'built hotel' %}build-hotel{% elif transaction[1] == 'built house' %}build-house{% endif %}">
+                <li class="{% if transaction[1] == 'buy' %}buy-property{% elif transaction[1] == 'pay_rent' %}pay-rent{% elif transaction[1] == 'reward' %}reward{% elif transaction[1] == 'pay_bank' %}pay-bank{% elif transaction[1] == 'built hotel' %}build-hotel{% elif transaction[1] == 'built house' %}build-house{% elif transaction[1] == 'salary' %}salary{% endif %}">
                     {% if transaction[1] == 'buy' %}
                         {{ transaction[2] }} bought the property "{{ transaction[5] }}" for Rs.{{ transaction[3] }}.
                     {% elif transaction[1] == 'pay_rent' %}
@@ -524,6 +577,8 @@
                         {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building an house at {{ transaction[5]}}. 
                     {% elif transaction[1] == 'built hotel' %}
                     {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building an hotel at {{ transaction[5]}}.
+                    {% elif transaction[1] == 'salary' %}
+                        {{ transaction[2] }} received a salary of Rs.{{ transaction[3] }} for passing GO.
                     {% endif %}
                 </li>
             {% endfor %}
@@ -663,6 +718,20 @@
         </form>
         <button class="closeb" onclick="hidepopupreward() ">Cancel</button>
     </div>
+    <div id="playerInputPopup" class="go-popup">
+        <h2>AS YOU PASS GO COLLECT 2 MILLION AS SALARY</h2>
+
+        <label for="playerNameInput">Select Player:</label>
+        <select id="playerNameInput" name="playerNameInput">
+            <!-- dynamic player names  -->
+            {% for player in player_names %}
+                <option value="{{ player }}">{{ player }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="sendPlayerNameToFlask()">Submit</button>
+        <button class="closeb" onclick="hidePlayerInputPopup()">Cancel</button>
+    </div>
+    
     <div id="overlay" class="overlay"></div>
     
 </body>
@@ -673,6 +742,16 @@
     const siteOptions = {{ site_names | safe }};
     const trainOptions = {{ train_names | safe }};
     const utilityOptions = {{ utilities_names | safe }};
+
+    function showPlayerInputPopup() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('playerInputPopup').style.display = 'block';
+    }
+
+    function hidePlayerInputPopup() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('playerInputPopup').style.display = 'none';
+    }
 
     function showpopupbhh() {
             document.getElementById('popupbuildhh').style.display = 'block';
@@ -862,7 +941,34 @@ function buyProperty() {
     });
     hidePopup();
 }
-
+function sendPlayerNameToFlask() {
+    const playerName = document.getElementById('playerNameInput').value;
+    
+    // Make an AJAX request to Flask
+    $.ajax({
+        type: 'POST',
+        url: '/collectsalary',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+            playerName: playerName
+        }),
+        success: function (data) {
+            if (data.status === 'error' ) {
+                // Show the error alert
+                alert(data.message);
+            }  else {
+                alert('SALARY AMOUNT COLLECTED SUCESSFULLY!!');
+                // Reload the page after a successful update
+                location.reload();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Redirect or handle the error
+            console.error('Error:', errorThrown);
+        }
+    });
+    hidepopupbank();
+}
 function paybank() {
     const playerName = document.getElementById('bplayer').value;
     const amt = document.getElementById('amount').value;

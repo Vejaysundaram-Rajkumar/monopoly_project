@@ -453,6 +453,24 @@ def reward_bank_func(player, amount):
     b=1
     return b
 
+def collect_salary_func(player):
+    con=connect_db()
+    cursor=con.cursor()
+    amount=2000000
+    #getting the balance of the player
+    cursor.execute("SELECT current_money FROM players WHERE name= ?",(player,))
+    b_balance=cursor.fetchone()
+    payer_bal=b_balance[0]+amount
+    #updating the builder's balance amount into is database
+    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+    val2 = (payer_bal, player)
+    cursor.execute(up1, val2)
+    con.commit()
+    transaction_func("salary",player,amount,"","",0)
+    b=1
+    return b
+
+
 #Deleting the created game.
 def deletegame():
     con=connect_db()

@@ -110,6 +110,29 @@
     color: red; 
     margin-bottom: 40px;
 }
+.option {
+        background-size:30%; 
+        background-position: right; 
+        background-repeat: no-repeat;
+        padding: 20px; 
+        margin: 10px; 
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        height:auto;
+        width:max-content;
+    }
+
+    .option:hover {
+        background-color: #27ae60; 
+        transform: scale(1.05);
+    }
     </style>
 </head>
 <body>
@@ -139,6 +162,9 @@
             </tbody>
         </table>
     </div>
+    <button class="option"  onclick="window.location.href = '/'" style="background-image: url('static/images/exit.png')">
+        Exit Game
+    </button>
     <img src="static/images/winner2.png" alt="Right Image" class="side-image">
 </div>
 
