@@ -1,7 +1,6 @@
 from numerize import numerize
 import sqlite3
 import locale
-import random
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
 play=True
 playernames=[]
@@ -21,6 +20,7 @@ def transaction_func(t_type,player_name,amount,pr_type,propt_name,dice_roll):
     val = (no,)
     cursor.execute(upc, val)
     con.commit()
+    con.close()
 
 def utility_rent_check():
     con=connect_db()
@@ -74,7 +74,7 @@ def result_func():
                             WHEN c.current_rent = 'rent_H1' THEN house_cost
                             WHEN c.current_rent = 'rent_H2' THEN 2 * house_cost
                             WHEN c.current_rent = 'rent_H3' THEN 3 * house_cost
-                            WHEN c.current_rent = 'rent_H4' THEN 4 * house_cost + hotel_cost
+                            WHEN c.current_rent = 'rent_H4' THEN 4 * house_cost 
                             WHEN c.current_rent = 'rent_Hotel' THEN 4 * house_cost + hotel_cost
                             ELSE 0
                         END), 0) AS houses_and_hotels_cost,
@@ -105,8 +105,8 @@ def result_func():
         net_worths.append((player_id, player_name, net_worth))
 
     # Sort players by net worth
-    net_worths.sort(key=lambda x: x[2], reverse=True)
-    
+    net_worths.sort(key=lambda x: x[2])
+    print(net_worths)
     return net_worths
 
 def buy_house_hotel_func(buyer,b_type,prop_name):
@@ -130,86 +130,90 @@ def buy_house_hotel_func(buyer,b_type,prop_name):
     if(owner[0]!="bank"):
         # Checking if the player is the owner of the property that he/she tries to build house or hotel
         if(owner[0]==buyer):
-            #if maximum is reached then returning the message for the builder
-            if(rent_set[0]!="rent_H4" and b_type=='house'):
-                #getting the next rent bracket  
-                if(rent_set[0]=="rent"):
-                    next_rent="rent_H1"
-                elif(rent_set[0]=="rent_H1"):
-                    next_rent="rent_H2"
-                elif(rent_set[0]=="rent_H2"):
-                        next_rent="rent_H3"
-                elif(rent_set[0]=="rent_H3"):
-                    next_rent="rent_H4"
+            if(rent_set[0]=="rent_Hotel"):
+                b=9
+                return b
+            else: 
+                #if maximum is reached then returning the message for the builder
+                if(rent_set[0]!="rent_H4" and b_type=='house'):
+                    #getting the next rent bracket  
+                    if(rent_set[0]=="rent"):
+                        next_rent="rent_H1"
+                    elif(rent_set[0]=="rent_H1"):
+                        next_rent="rent_H2"
+                    elif(rent_set[0]=="rent_H2"):
+                            next_rent="rent_H3"
+                    elif(rent_set[0]=="rent_H3"):
+                        next_rent="rent_H4"
 
-                #Getting the cost for building an house
-                cursor.execute("SELECT house_cost FROM cities WHERE name = ?",(prop_name,))
-                Hbuild_cost=cursor.fetchone()
+                    #Getting the cost for building an house
+                    cursor.execute("SELECT house_cost FROM cities WHERE name = ?",(prop_name,))
+                    Hbuild_cost=cursor.fetchone()
 
-                #getting the balance of the player
-                cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
-                b_balance=cursor.fetchone()
+                    #getting the balance of the player
+                    cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
+                    b_balance=cursor.fetchone()
 
-                if(Hbuild_cost[0]<=b_balance[0]):
-                    builder_balance=b_balance[0]-Hbuild_cost[0]
-                    #updating the builder's balance amount into is database
-                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
-                    val2 = (builder_balance, buyer)
-                    cursor.execute(up1, val2)
+                    if(Hbuild_cost[0]<=b_balance[0]):
+                        builder_balance=b_balance[0]-Hbuild_cost[0]
+                        #updating the builder's balance amount into is database
+                        up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                        val2 = (builder_balance, buyer)
+                        cursor.execute(up1, val2)
 
-                    #updating the owner of the property into is database                        
-                    up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
-                    val3 = (next_rent,prop_name)
-                    cursor.execute(up2, val3)
-                    con.commit()
-                    b=1
-                    transaction_func("built house",buyer,Hbuild_cost[0],"site",prop_name,0)
+                        #updating the owner of the property into is database                        
+                        up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
+                        val3 = (next_rent,prop_name)
+                        cursor.execute(up2, val3)
+                        con.commit()
+                        b=1
+                        transaction_func("built house",buyer,Hbuild_cost[0],"site",prop_name,0)
+                        return b
+                    else:
+                        b=-1
+                        con.close()
+                        return b
+                elif(b_type=='hotel' and rent_set[0]=='rent_H4'):
+                    next_rent="rent_Hotel"
+                    #Getting the cost for building an house
+                    cursor.execute("SELECT hotel_cost FROM cities WHERE name = ?",(prop_name,))
+                    Hbuild_cost=cursor.fetchone()
+                    #getting the balance of the player
+                    cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
+                    b_balance=cursor.fetchone()
+
+                    if(Hbuild_cost[0]<=b_balance[0]):
+                        builder_balance=b_balance[0]-Hbuild_cost[0]
+                        #updating the builder's balance amount into is database
+                        up1 = "UPDATE players SET current_money = ? WHERE name = ?"
+                        val2 = (builder_balance, buyer)
+                        cursor.execute(up1, val2)
+
+                        #updating the owner of the property into is database                        
+                        up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
+                        val3 = (next_rent,prop_name)
+                        cursor.execute(up2, val3)
+                        con.commit()
+                        b=1
+                        transaction_func("built hotel",buyer,Hbuild_cost[0],"site",prop_name,0)
+                        return b
+                    else:
+                        print("Insufficient balance for the player!!")
+                        con.close()
+                        b=-1
+                        return b
+                elif(b_type=='hotel' and rent_set[0]!="rent_H4"):
+                    print("REQUIRED AMOUNT OF HOUSES IS NOT BUILT YET IN THIS PROPERTY!!")
+                    b=-2
+                    return b
+                elif(b_type=='hotel' and rent_set[0]=="rent_Hotel"):
+                    print("NO MORE HOTEL CAN BE BUILT IN THIS PROPERTY!!")
+                    b=5
                     return b
                 else:
-                    b=-1
-                    con.close()
+                    print("NO MORE HOUSES CAN BE BUILT IN THIS PROPERTY!!")
+                    b=4
                     return b
-            elif(b_type=='hotel' and rent_set[0]=='rent_H4'):
-                next_rent="rent_Hotel"
-                #Getting the cost for building an house
-                cursor.execute("SELECT hotel_cost FROM cities WHERE name = ?",(prop_name,))
-                Hbuild_cost=cursor.fetchone()
-                #getting the balance of the player
-                cursor.execute("SELECT current_money FROM players WHERE name= ?",(buyer,))
-                b_balance=cursor.fetchone()
-
-                if(Hbuild_cost[0]<=b_balance[0]):
-                    builder_balance=b_balance[0]-Hbuild_cost[0]
-                    #updating the builder's balance amount into is database
-                    up1 = "UPDATE players SET current_money = ? WHERE name = ?"
-                    val2 = (builder_balance, buyer)
-                    cursor.execute(up1, val2)
-
-                    #updating the owner of the property into is database                        
-                    up2 = "UPDATE cities SET current_rent = ? WHERE name = ?"
-                    val3 = (next_rent,prop_name)
-                    cursor.execute(up2, val3)
-                    con.commit()
-                    b=1
-                    transaction_func("built hotel",buyer,Hbuild_cost[0],"site",prop_name,0)
-                    return b
-                else:
-                    print("Insufficient balance for the player!!")
-                    con.close()
-                    b=-1
-                    return b
-            elif(b_type=='hotel' and rent_set[0]!="rent_H4"):
-                print("REQUIRED AMOUNT OF HOUSES IS NOT BUILT YET IN THIS PROPERTY!!")
-                b=-2
-                return b
-            elif(b_type=='hotel' and rent_set[0]=="rent_Hotel"):
-                print("NO MORE HOTEL CAN BE BUILT IN THIS PROPERTY!!")
-                b=5
-                return b
-            else:
-                print("NO MORE HOUSES CAN BE BUILT IN THIS PROPERTY!!")
-                b=4
-                return b
         else:
             print("The owner of the property and the builder mismatched!!")
             b=0
@@ -472,11 +476,167 @@ def collect_salary_func(player):
     return b
 
 
-def chance_func(player_name):
-    return 1
+def no_of_buildings(player_name):
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("""
+    SELECT COALESCE(SUM(CASE
+    WHEN c.current_rent = 'rent_H1' THEN 1
+    WHEN c.current_rent = 'rent_H2' THEN 2 
+    WHEN c.current_rent = 'rent_H3' THEN 3 
+    WHEN c.current_rent = 'rent_H4' THEN 4 
+    WHEN c.current_rent = 'rent_Hotel' THEN 4 
+    ELSE 0
+    END), 0) AS houses_total
+    FROM
+    cities c
+    WHERE
+    c.owner = ?
+    """, (player_name,))
+    houses=cursor.fetchone()
+    cursor.execute("""
+    SELECT COALESCE(SUM(CASE
+    WHEN c.current_rent = 'rent_Hotel' THEN 1 
+    ELSE 0
+    END), 0) AS hotel_total
+    FROM
+    cities c
+    WHERE
+    c.owner = ?
+    """, (player_name,))
+    hotels=cursor.fetchone()
+    count=[houses[0],hotels[0]]
+    return count
 
-def community_chest_func(playername):
-    return 1
+def statement_func(id):
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute('SELECT Statement FROM cards WHERE Id = ?', (id,))
+    result = cursor.fetchone()
+    con.close()
+    return result[0]
+
+def chance_func(player_name,id):
+    ans=[]
+    if(id<=14):
+        if(id>=9 and id<=13):
+            if(id==12):
+                args=no_of_buildings(player_name)
+                house_cost=args[0]*250000
+                hotel_cost=args[1]*100000
+                total_cost=house_cost+hotel_cost
+                print(total_cost)
+                r=pay_bank_func(player_name,total_cost)
+                if(r==1):
+                    ans.append(1)
+                    res=statement_func(id)
+                    ans.append(res)
+                    transaction_func("chance",player_name,0,"",res,0)
+                    return ans
+                else:
+                    ans.append(0)
+                    ans.append(0) 
+                    return ans
+            else:
+                con=connect_db()
+                cursor=con.cursor()
+                cursor.execute('SELECT Amount FROM cards WHERE Id = ?', (id,))
+                amt=cursor.fetchone()
+                r=reward_bank_func(player_name,amt[0])
+                if(r==1):
+                    ans.append(1)
+                    res=statement_func(id)
+                    ans.append(res)
+                    transaction_func("chance",player_name,0,"",res,0)
+                    return ans
+                else:
+                    ans.append(0)
+                    ans.append(0) 
+                    return ans
+        elif(id==14):
+            con=connect_db()
+            cursor=con.cursor()
+            cursor.execute('SELECT Amount FROM cards WHERE Id = ?', (id,))
+            amt=cursor.fetchone()
+            r=pay_bank_func(player_name,amt[0])
+            if(r==1):
+                ans.append(1)
+                res=statement_func(id)
+                ans.append(res)
+                transaction_func("chance",player_name,0,"",res,0)
+                return ans
+            else:
+                ans.append(0)
+                ans.append(0) 
+                return ans
+    else:
+        res=statement_func(id)
+        transaction_func("chance",player_name,0,"",res,0)
+        ans.append(1)
+        ans.append(res)
+        return ans
+    
+
+def community_chest_func(player_name,id):
+    ans=[]
+    if(id<=8):
+        con=connect_db()
+        cursor=con.cursor()
+        cursor.execute('SELECT Amount FROM cards WHERE Id = ?', (id,))
+        amt=cursor.fetchone()
+        r=reward_bank_func(player_name,amt[0])
+        if(r==1):
+            ans.append(1)
+            res=statement_func(id)
+            ans.append(res)
+            transaction_func("communitychest",player_name,0,"",res,0)
+            return ans
+        else:
+            ans.append(0)
+            ans.append(0) 
+            return ans
+
+    elif(id==15):
+        args=no_of_buildings(player_name)
+        house_cost=args[0]*140000
+        hotel_cost=args[1]*215000
+        total_cost=house_cost+hotel_cost
+        print(total_cost)
+        r=pay_bank_func(player_name,total_cost)
+        if(r==1):
+            ans.append(1)
+            res=statement_func(id)
+            ans.append(res)
+            transaction_func("communitychest",player_name,0,"",res,0)
+            return ans
+        else:
+            ans.append(0)
+            ans.append(0) 
+            return ans
+
+    elif(id>=16 and id<=20):
+        con=connect_db()
+        cursor=con.cursor()
+        cursor.execute('SELECT Amount FROM cards WHERE Id = ?', (id,))
+        amt=cursor.fetchone()
+        r=pay_bank_func(player_name,amt[0])
+        if(r==1):
+            ans.append(1)
+            res=statement_func(id)
+            ans.append(res)
+            transaction_func("communitychest",player_name,0,"",res,0)
+            return ans
+        else:
+            ans.append(0)
+            ans.append(0) 
+            return ans
+    else:
+        res=statement_func(id)
+        transaction_func("communitychest",player_name,0,"",res,0)
+        ans.append(1)
+        ans.append(res)
+        return ans
+    
 
 
 
@@ -533,12 +693,4 @@ def continuegame():
         b=names[0]
         return b
 
-
-con=connect_db()
-cursor=con.cursor()
-cursor.execute('SELECT Id FROM cards WHERE Option = "community chest"')
-community_chest_ids = [row[0] for row in cursor.fetchall()]
-# Get IDs for rows with "chance"
-cursor.execute('SELECT Id FROM cards WHERE Option = "chance"')
-chance_ids = [row[0] for row in cursor.fetchall()]
-con.close()
+result_func()

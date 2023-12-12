@@ -411,7 +411,7 @@
 /* Styles for different transaction types */
 
 .transactions-list li.pay-rent {
-    background-color: #e74c3c;
+    background-color: #de1d08;
     color: #000000;
     font-weight: bold;
     animation: fadeIn 0.5s ease-in-out;
@@ -449,6 +449,18 @@
     animation: fadeIn 0.5s ease-in-out;
 }
 .transactions-list li.salary {
+    background-color: #008f0a;
+    color: #0f0e0e;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in-out;
+}
+.transactions-list li.chance-tr {
+    background-color: #008f0a;
+    color: #0f0e0e;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in-out;
+}
+    .transactions-list li.community-chest {
     background-color: #008f0a;
     color: #0f0e0e;
     font-weight: bold;
@@ -693,12 +705,12 @@
         <ul id="transactions-list" class="transactions-list">
             {% for i in range(transaction_list|length - 1, -1, -1) %}
                 {% set transaction = transaction_list[i] %}
-                <li class="{% if transaction[1] == 'buy' %}buy-property{% elif transaction[1] == 'pay_rent' %}pay-rent{% elif transaction[1] == 'reward' %}reward{% elif transaction[1] == 'pay_bank' %}pay-bank{% elif transaction[1] == 'built hotel' %}build-hotel{% elif transaction[1] == 'built house' %}build-house{% elif transaction[1] == 'salary' %}salary{% endif %}">
+                <li class="{% if transaction[1] == 'buy' %}buy-property{% elif transaction[1] == 'pay_rent' %}pay-rent{% elif transaction[1] == 'reward' %}reward{% elif transaction[1] == 'pay_bank' %}pay-bank{% elif transaction[1] == 'built hotel' %}build-hotel{% elif transaction[1] == 'built house' %}build-house{% elif transaction[1] == 'salary' %}salary{% elif transaction[1] == 'chance' %}chance-tr{% elif transaction[1] == 'communitychest' %}community-chest{% endif %}">
                     {% if transaction[1] == 'buy' %}
                         {{ transaction[2] }} bought the property "{{ transaction[5] }}" for Rs.{{ transaction[3] }}.
                     {% elif transaction[1] == 'pay_rent' %}
                         {% if transaction[4] == 'utilities' %}
-                        {{ transaction[2] }} paid rent of Rs.{{ transaction[3] }} for {{ transaction[5] }}  with a dice roll of {{ transaction[6] }}.
+                        {{ transaction[2] }} paid rent of Rs.{{ transaction[3] }} for {{ transaction[5] }} with a dice roll of {{ transaction[6] }}.
                         {% else %}
                         {{ transaction[2] }} paid rent of Rs.{{ transaction[3] }} for {{ transaction[5] }}. 
                         {% endif %} 
@@ -707,16 +719,23 @@
                     {% elif transaction[1] == 'pay_bank' %}
                         {{ transaction[2] }} paid Rs.{{ transaction[3] }} to the bank.
                     {% elif transaction[1] == 'built house' %}
-                        {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building an house at {{ transaction[5]}}. 
+                        {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building a house at {{ transaction[5]}}. 
                     {% elif transaction[1] == 'built hotel' %}
-                    {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building an hotel at {{ transaction[5]}}.
+                        {{ transaction[2] }} paid Rs.{{ transaction[3] }} for building a hotel at {{ transaction[5]}}.
                     {% elif transaction[1] == 'salary' %}
                         {{ transaction[2] }} received a salary of Rs.{{ transaction[3] }} for passing GO.
+                    {% elif transaction[1] == 'chance' %}
+                        {{ transaction[2] }} picked '{{ transaction[5] }}' chance card.
+                    {% elif transaction[1] == 'communitychest' %}
+                        {{ transaction[2] }} picked "{{ transaction[5] }}" community chest card.
                     {% endif %}
                 </li>
             {% endfor %}
         </ul>
     </div>
+    
+    
+    
     <div id="popup" class="popup">
         
         <h2>Buy an  Property</h2>
@@ -885,7 +904,8 @@
     </div>
     <div id="comchestchancemessage" class="comchestchancemessage">
         <h2 id="ccctitle"></h2>
-        <p id="cccmessage"></p>
+        <p id="cccmessage"></p><br>
+        <br>
         <button class="close3" onclick="closecccbox()">Ok</button>
     </div>
 

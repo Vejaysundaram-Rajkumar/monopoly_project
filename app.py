@@ -4,6 +4,7 @@ import sqlite3
 import hashlib
 import locale
 import json
+import random
 from flask import jsonify
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
 import gamelogiccopy
@@ -196,26 +197,33 @@ def collectsalary():
     
 @app.route('/chance', methods=['POST'])
 def chance():
+    id=random.choice(chance_ids)
+    print(id)
     data = request.get_json()
     player_name = data.get('playerName')
-    build_db=gamelogiccopy.chance_func(player_name)
+    build_db=gamelogiccopy.chance_func(player_name,id)
     print(build_db)    
-    if(build_db==1):
-        return jsonify({'status': 'success'})
+    if(build_db[0]==1):
+        return jsonify({'status': 'success','message':build_db[1]})
+    elif(build_db[0]==0):
+        return jsonify({'status': 'error','message':'Uncommon error!..updation of the chance card failed!'})
     else:
-        error_message="Some error occured while transwering the reward!!"
+        error_message="Some error occured while implementing the chance statement!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/communitychest', methods=['POST'])
 def communitychest():
+    id=random.choice(community_chest_ids)
     data = request.get_json()
     player_name = data.get('playerName')
-    build_db=gamelogiccopy.community_chest_func(player_name)
+    build_db=gamelogiccopy.community_chest_func(player_name,id)
     print(build_db)    
-    if(build_db==1):
-        return jsonify({'status': 'success'})
+    if(build_db[0]==1):
+        return jsonify({'status': 'success','message':build_db[1]})
+    elif(build_db[0]==0):
+        return jsonify({'status': 'error','message':'Uncommon error!..updation of the community chest card failed!'})
     else:
-        error_message="Some error occured while transwering the reward!!"
+        error_message="Some error occured while implementing the chance statement!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/buildingconstruction', methods=['POST'])
@@ -243,14 +251,11 @@ def buildingconstruction():
         return jsonify({'status': 'error', 'message': 'maximum house is built!' })
     elif(build_db==5):
         return jsonify({'status': 'error', 'message': 'maximum hotel is built!' })
+    elif(build_db==9):
+        return jsonify({'status': 'error', 'message': 'maximum number of hotel and houses is built!' })
     else:
         error_message="Some error occured while paying the rent!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
-
-
-
-
-
 
 
 
@@ -278,6 +283,16 @@ def error():
     status = request.args.get('status', 'unknown')
     message = request.args.get('message', 'An error occurred.')
     return render_template('error.html', error_title=status, error_message=message), 500
+
+con=connect_db()
+cursor=con.cursor()
+cursor.execute('SELECT Id FROM cards WHERE Option = "community chest"')
+community_chest_ids = [row[0] for row in cursor.fetchall()]
+# Get IDs for rows with "chance"
+cursor.execute('SELECT Id FROM cards WHERE Option = "chance"')
+chance_ids = [row[0] for row in cursor.fetchall()]
+con.close()
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
