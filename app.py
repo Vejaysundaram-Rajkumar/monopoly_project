@@ -161,7 +161,7 @@ def pay_bank():
     build_db=gamelogiccopy.pay_bank_func(player_name, amt)
     print(build_db)    
     if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to buy this property.' })
+        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to pay the bank!.' })
     elif(build_db==1):
         return jsonify({'status': 'success'})
     else:
@@ -187,6 +187,30 @@ def collectsalary():
     data = request.get_json()
     player_name = data.get('playerName')
     build_db=gamelogiccopy.collect_salary_func(player_name)
+    print(build_db)    
+    if(build_db==1):
+        return jsonify({'status': 'success'})
+    else:
+        error_message="Some error occured while transwering the reward!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+    
+@app.route('/chance', methods=['POST'])
+def chance():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    build_db=gamelogiccopy.chance_func(player_name)
+    print(build_db)    
+    if(build_db==1):
+        return jsonify({'status': 'success'})
+    else:
+        error_message="Some error occured while transwering the reward!!"
+        return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
+@app.route('/communitychest', methods=['POST'])
+def communitychest():
+    data = request.get_json()
+    player_name = data.get('playerName')
+    build_db=gamelogiccopy.community_chest_func(player_name)
     print(build_db)    
     if(build_db==1):
         return jsonify({'status': 'success'})

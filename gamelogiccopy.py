@@ -1,6 +1,7 @@
 from numerize import numerize
 import sqlite3
 import locale
+import random
 locale.setlocale(locale.LC_MONETARY, 'en_IN')
 play=True
 playernames=[]
@@ -471,6 +472,14 @@ def collect_salary_func(player):
     return b
 
 
+def chance_func(player_name):
+    return 1
+
+def community_chest_func(playername):
+    return 1
+
+
+
 #Deleting the created game.
 def deletegame():
     con=connect_db()
@@ -523,3 +532,13 @@ def continuegame():
     else:
         b=names[0]
         return b
+
+
+con=connect_db()
+cursor=con.cursor()
+cursor.execute('SELECT Id FROM cards WHERE Option = "community chest"')
+community_chest_ids = [row[0] for row in cursor.fetchall()]
+# Get IDs for rows with "chance"
+cursor.execute('SELECT Id FROM cards WHERE Option = "chance"')
+chance_ids = [row[0] for row in cursor.fetchall()]
+con.close()
