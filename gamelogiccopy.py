@@ -692,4 +692,3 @@ def continuegame():
         b=names[0]
         return b
 
-result_func()
