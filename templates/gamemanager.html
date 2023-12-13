@@ -642,20 +642,100 @@
         margin-bottom: 15px;
         }
 
-        @media only screen and (max-width: 600px) {
-            main {
-                max-width: 100%;
-                margin: 2em 0.5em;
+        @media only screen and (min-width: 540px) and (max-width:1490px)  {
+            .sidebar {
+                background-color: #bdc3c7;
+                border: 1px solid #000000;
+                padding: 10px;
+                border-radius: 5px;
+                position: fixed;
+                width: 40%; 
+                height: 42%;
+                overflow-y: auto;
+                top:55%;
+                left:5px;
+        }
+            .transaction-history {
+            background-color: #bdc3c7;
+            border: 1px solid #000000;
+            padding: 10px;
+            border-radius: 5px;
+            position: fixed;
+            width: 43%; 
+            height: 42%; 
+            overflow-y: auto;
+            top:55%;
+            right:8px; 
+        }
+        .transaction-history h1{
+            font-size:12px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 30%);
+            grid-template-rows: auto;
+            margin-left: 5px;
+            gap: 6.5%;
+            margin-bottom: 5px;
+        }
+        .exit{
+            width:30%;
+            background-size:30%; 
+            background-position: right; 
+            background-repeat: no-repeat;
+        }
+        .option {
+        background-size:30%; 
+        background-position: right; 
+        background-repeat: no-repeat;
+        text-align: left;
+        width: 80%; 
+        height: 55px; 
+        border: none;
+        border-radius: 2px;
+        font-size: 12px;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        }
+        .player-outstanding{
+            font-size:12px;
+        }
+        .sidebar-title{
+            font-size:14px;
+        }
+        .title-bar {
+                background-color: #bdc3c7;
+                
+                color: #000000;
+                border-radius: 5%;
+                font-size: 10px;
+                font-weight: bolder;
+                display: grid;
+                grid-template-columns: repeat(2, 200px);
+                text-align: center;
+                margin-top: 10px;
+                background-size:30%;
             }
-
-            .options {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            /* Add more responsive styles as needed */
+header {
+            background-color: #ea3333;
+            background-image: url('static/images/landing.png');
+            background-size: 30%;
+            background-position:left; 
+            background-position-x: 10px;
+            background-position-y: -3px;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            text-align: right;
+            font-size: 14px;   
+            width:auto;
+        }
+        .transactions-list{
+            font-size:10px;
+        }
         }
 
-        @media only screen and (max-width: 450px) {
+        @media only screen and (max-width: 530px) {
             .sidebar {
                 background-color: #bdc3c7;
                 border: 1px solid #000000;
