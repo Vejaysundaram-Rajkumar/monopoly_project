@@ -107,157 +107,181 @@ def submit():
 
 @app.route('/endgame')
 def endgame():
-    result=gamelogiccopy.result_func()
-    winner_name = result[0][1]
-    return render_template('leaderboard.html',players=result,winner_name=winner_name)
+    try:
+        result=gamelogiccopy.result_func()
+        formatted_result = []
+        for i in range(len(result)):
+            formatted_value = locale.currency(result[i][2], grouping=True)
+            formatted_result.append((result[i][0], result[i][1], formatted_value))
+        winner_name = formatted_result[0][1]
+        return render_template('leaderboard.html', players=formatted_result, winner_name=winner_name)
+    
+    except:
+        error_message="There is no Saved games found in the database!"
+        return redirect(url_for('error', status='No Saved Games found!!', message=error_message))
 @app.route('/buy_property', methods=['POST'])
 def buy_property():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    property_type = data.get('propertyType')
-    specific_property = data.get('specificProperty')
-    build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)
-    print(build_db)    
-    if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to buy this property.' })
-    elif(build_db==-2):
-        return jsonify({'status': 'error', 'message': 'No property available right now!' })
-    elif(build_db==1):
-        return jsonify({'status': 'success'})
-    elif(build_db==0):
-        return jsonify({'status': 'error', 'message': 'bought' })
-    else:
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        property_type = data.get('propertyType')
+        specific_property = data.get('specificProperty')
+        build_db=gamelogiccopy.building_func(player_name, property_type, specific_property)
+        print(build_db)    
+        if(build_db==-1):
+            return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to buy this property.' })
+        elif(build_db==-2):
+            return jsonify({'status': 'error', 'message': 'No property available right now!' })
+        elif(build_db==1):
+            return jsonify({'status': 'success'})
+        elif(build_db==0):
+            return jsonify({'status': 'error', 'message': 'bought already!!' })
+        else:
+            return jsonify({'status': 'error', 'message': '404' })
+    except:    
         error_message="Some error occured while buying the property!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/pay_rent', methods=['POST'])
 def pay_rent():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    property_type = data.get('propertyType')
-    specific_property = data.get('specificProperty')
-    diceRoll = data.get('diceRoll')
-    print(diceRoll)
-    build_db=gamelogiccopy.payingrent_func(player_name, property_type, specific_property,diceRoll)
-    print(build_db)    
-    if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
-    elif(build_db==-3):
-        return jsonify({'status': 'error', 'message': 'No property available right now!' })
-    elif(build_db==1):
-        return jsonify({'status': 'success'})
-    elif(build_db==0):
-        return jsonify({'status': 'error', 'message': 'This property is not yet bought! ' })
-    elif(build_db==-2):
-        return jsonify({'status': 'error', 'message': 'Same Person' })
-    else:
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        property_type = data.get('propertyType')
+        specific_property = data.get('specificProperty')
+        diceRoll = data.get('diceRoll')
+        print(diceRoll)
+        build_db=gamelogiccopy.payingrent_func(player_name, property_type, specific_property,diceRoll)
+        print(build_db)    
+        if(build_db==-1):
+            return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
+        elif(build_db==-3):
+            return jsonify({'status': 'error', 'message': 'No property available right now!' })
+        elif(build_db==1):
+            return jsonify({'status': 'success'})
+        elif(build_db==0):
+            return jsonify({'status': 'error', 'message': 'This property is not yet bought! ' })
+        elif(build_db==-2):
+            return jsonify({'status': 'error', 'message': 'Same Person' })
+        else:
+            return jsonify({'status': 'error', 'message': '404' })
+    except:        
         error_message="Some error occured while paying the rent!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/pay_bank', methods=['POST'])
 def pay_bank():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    amt=data.get('amt')
-    build_db=gamelogiccopy.pay_bank_func(player_name, amt)
-    print(build_db)    
-    if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to pay the bank!.' })
-    elif(build_db==1):
-        return jsonify({'status': 'success'})
-    else:
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        amt=data.get('amt')
+        build_db=gamelogiccopy.pay_bank_func(player_name, amt)
+        print(build_db)    
+        if(build_db==-1):
+            return jsonify({'status': 'error', 'message': 'insufficient funds !! You dont have enough funds to pay the bank!.' })
+        elif(build_db==1):
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'error', 'message':'404'})
+    except:
         error_message="Some error occured while paying the bank!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
-
 @app.route('/reward_bank', methods=['POST'])
 def reward_bank():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    amt=data.get('amt')
-    build_db=gamelogiccopy.reward_bank_func(player_name, amt)
-    print(build_db)    
-    if(build_db==1):
-        return jsonify({'status': 'success'})
-    else:
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        amt=data.get('amt')
+        build_db=gamelogiccopy.reward_bank_func(player_name, amt)
+        print(build_db)    
+        if(build_db==1):
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'error','message':'404'})
+    except:
         error_message="Some error occured while transwering the reward!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
-
 
 @app.route('/collectsalary', methods=['POST'])
 def collectsalary():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    build_db=gamelogiccopy.collect_salary_func(player_name)
-    print(build_db)    
-    if(build_db==1):
-        return jsonify({'status': 'success'})
-    else:
-        error_message="Some error occured while transwering the reward!!"
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        build_db=gamelogiccopy.collect_salary_func(player_name)
+        print(build_db)    
+        if(build_db==1):
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'error','message':'404' })
+    except:
+        error_message="Some error occured while transwering your salary!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
-    
 @app.route('/chance', methods=['POST'])
 def chance():
-    id=random.choice(chance_ids)
-    print(id)
-    data = request.get_json()
-    player_name = data.get('playerName')
-    build_db=gamelogiccopy.chance_func(player_name,id)
-    print(build_db)    
-    if(build_db[0]==1):
-        return jsonify({'status': 'success','message':build_db[1]})
-    elif(build_db[0]==0):
-        return jsonify({'status': 'error','message':'Uncommon error!..updation of the chance card failed!'})
-    else:
+    try:
+        id=random.choice(chance_ids)
+        print(id)
+        data = request.get_json()
+        player_name = data.get('playerName')
+        build_db=gamelogiccopy.chance_func(player_name,id)
+        print(build_db)    
+        if(build_db[0]==1):
+            return jsonify({'status': 'success','message':build_db[1]})
+        else:
+            return jsonify({'status': 'error','message':'404'})
+    except:
         error_message="Some error occured while implementing the chance statement!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/communitychest', methods=['POST'])
 def communitychest():
-    id=random.choice(community_chest_ids)
-    data = request.get_json()
-    player_name = data.get('playerName')
-    build_db=gamelogiccopy.community_chest_func(player_name,id)
-    print(build_db)    
-    if(build_db[0]==1):
-        return jsonify({'status': 'success','message':build_db[1]})
-    elif(build_db[0]==0):
-        return jsonify({'status': 'error','message':'Uncommon error!..updation of the community chest card failed!'})
-    else:
+    try:
+        id=random.choice(community_chest_ids)
+        data = request.get_json()
+        player_name = data.get('playerName')
+        build_db=gamelogiccopy.community_chest_func(player_name,id)
+        print(build_db)    
+        if(build_db[0]==1):
+            return jsonify({'status': 'success','message':build_db[1]})
+        else:
+            return jsonify({'status': 'error','message':'404'})
+    except:
         error_message="Some error occured while implementing the chance statement!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
 
 @app.route('/buildingconstruction', methods=['POST'])
 def buildingconstruction():
-    data = request.get_json()
-    player_name = data.get('playerName')
-    property_type = data.get('propertyType')
-    specific_property = data.get('specificProperty')
-    print(specific_property)
-    build_db=gamelogiccopy.buy_house_hotel_func(player_name, property_type, specific_property)
-    print(build_db)    
-    if(build_db==-1):
-        return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
-    elif(build_db==-2):
-        return jsonify({'status': 'error', 'message': 'Required houses not yet built' })
-    elif(build_db==1):
-        return jsonify({'status': 'success'})
-    elif(build_db==0):
-        return jsonify({'status': 'error', 'message': 'player and owner mismatch! ' })
-    elif(build_db==-3):
-        return jsonify({'status': 'error', 'message': 'Property not yet bought' })
-    elif(build_db==-4):
-        return jsonify({'status': 'error', 'message': 'No property available right now!' })
-    elif(build_db==4):
-        return jsonify({'status': 'error', 'message': 'maximum house is built!' })
-    elif(build_db==5):
-        return jsonify({'status': 'error', 'message': 'maximum hotel is built!' })
-    elif(build_db==9):
-        return jsonify({'status': 'error', 'message': 'maximum number of hotel and houses is built!' })
-    else:
+    try:
+        data = request.get_json()
+        player_name = data.get('playerName')
+        property_type = data.get('propertyType')
+        specific_property = data.get('specificProperty')
+        print(specific_property)
+        build_db=gamelogiccopy.buy_house_hotel_func(player_name, property_type, specific_property)
+        print(build_db)    
+        if(build_db==-1):
+            return jsonify({'status': 'error', 'message': 'insufficient funds!! You dont have enough funds to buy this property.' })
+        elif(build_db==-2):
+            return jsonify({'status': 'error', 'message': 'Required houses not yet built' })
+        elif(build_db==1):
+            return jsonify({'status': 'success'})
+        elif(build_db==0):
+            return jsonify({'status': 'error', 'message': 'player and owner mismatch! ' })
+        elif(build_db==-3):
+            return jsonify({'status': 'error', 'message': 'Property not yet bought' })
+        elif(build_db==-4):
+            return jsonify({'status': 'error', 'message': 'No property available right now!' })
+        elif(build_db==4):
+            return jsonify({'status': 'error', 'message': 'maximum house is built!' })
+        elif(build_db==5):
+            return jsonify({'status': 'error', 'message': 'maximum hotel is built!' })
+        elif(build_db==9):
+            return jsonify({'status': 'error', 'message': 'maximum number of hotel and houses is built!' })
+        else:
+            return jsonify({'status': 'error', 'message': '404' })
+    except:
         error_message="Some error occured while paying the rent!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
-
-
 
 @app.route('/deletegame', methods=['POST'])
 def deletegame():
@@ -272,7 +296,7 @@ def deletegame():
                 print("gg")
                 return jsonify({'status': 'error', 'message': 'no game found'})
         else:
-            return jsonify({'status': 'error',})
+            return jsonify({'status': 'error','message': '404'})
     except:
         error_message="Some error occured while deleting the game!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))

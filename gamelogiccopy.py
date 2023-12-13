@@ -101,11 +101,10 @@ def result_func():
     for player in player_info:
         player_id, player_name, current_money, houses_and_hotels_cost, sites_cost, trains_cost, utilities_cost = player
         net_worth = current_money + houses_and_hotels_cost + sites_cost + trains_cost + utilities_cost
-        net_worth=locale.currency(net_worth, grouping=True)
         net_worths.append((player_id, player_name, net_worth))
 
     # Sort players by net worth
-    net_worths.sort(key=lambda x: x[2])
+    net_worths.sort(key=lambda x: x[2],reverse=True)
     print(net_worths)
     return net_worths
 
