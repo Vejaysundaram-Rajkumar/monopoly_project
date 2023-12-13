@@ -9,9 +9,7 @@
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-             /* Replace with your background image path */
-            
-            background-color: #ffffff; /* Adjust the alpha value for opacity */
+            background-color: #ffffff; 
         }
         header {
             background-color: #ea3333;
@@ -65,7 +63,7 @@
         background-position: right; 
         background-repeat: no-repeat;
         padding: 20px;
-        width: 200px; /* Set your desired width */
+        width: 200px; 
         height: 80px; 
         border: none;
         border-radius: 5px;
@@ -121,20 +119,36 @@
         }
     /* end of player info display css */
 
-        /* for buy prop css */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #1097f0;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            z-index: 2;
-        }
-        .popup select {
+        /* for all popup css */
+    .popup,
+    .paypopup, 
+    .popupbank,
+    .popupreward,
+    .popupbuildhh,
+    .go-popup,
+    .communitychest,
+    .chance,
+    .comchestchancemessage{
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #1097f0;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+    }
+    .popup select,
+    .paypopup select,
+    .popupbank select,
+    .popupreward select,
+    .popupbuildhh select,
+    .go-popup select,
+    .communitychest select,
+    .chance select ,
+    .comchestchancemessage select{
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -146,193 +160,79 @@
 
 
 
-.popup button:hover {
-    background-color: #45a049;
-}
-
-.popup h2 {
-    color: #333;
-    font-size: 1.5em;
-    margin-bottom: 15px;
-}
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-        /* end of buy prop css */
-        /* paypop css starts  */
-        .paypopup {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #1097f0;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                z-index: 2;
-            }
-        .paypopup select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-
-        
-        .paypopup button:hover {
+    .popup button:hover,
+    .paypopup button:hover,
+    .popupbank button:hover,
+    .popupreward button:hover,
+    .popupbuildhh  button:hover,
+    .go-popup button:hover,
+    .communitychest button:hover,
+    .chance button:hover ,
+    .comchestchancemessage button:hover{
         background-color: #45a049;
-        }
+    }
 
-        .paypopup h2 {
+    .popup h2,
+    .paypopup h2,
+    .popupbank h2,
+    .popupreward h2,
+    .popupbuildhh h2,
+    .go-popup h2 ,
+    .communitychest h2,
+    .chance h2,
+    .comchestchancemessage h2 {
         color: #333;
         font-size: 1.5em;
         margin-bottom: 15px;
-        }
-/* paypopup css ends */
-        /* paybank popup css */
-        .popupbank {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #1097f0;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                z-index: 2;
-            }
-        .popupbank select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
+    }
 
-        
-        .popupbank button:hover {
-        background-color: #45a049;
-        }
+    .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    }
+    /* end of buy prop css */
 
-        .popupbank h2 {
-        color: #333;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-        }
-        /* REWARD FROM BANK CSS START*/
-        .popupreward {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #1097f0;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                z-index: 2;
-            }
-        .popupreward select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-
-        .popupreward button:hover {
-        background-color: #45a049;
-        }
-
-        .popupreward h2 {
-        color: #333;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-        }
-        /* pop up build house or hotel css start */
-        .popupbuildhh {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #1097f0;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                z-index: 2;
-            }
-        .popupbuildhh select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-
-        .popupbuildhh button:hover {
-        background-color: #45a049;
-        }
-
-        .popupbuildhh h2 {
-        color: #333;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-        }
-
-        /* Add a closing button (x) */
-        .closebtn {
-        border-radius: 4px;
-        margin-left: 15px;
-        padding: 10px 15px;
-        color: white;
-        background-color: #4CAF50;
-        font-weight: bold;
-        float: right;
-        font-size: 22px;
-        line-height: 20px;
-        cursor: pointer;
-        transition: 0.3s;
-        }
-        .submitbtn{
-        border-radius: 4px;
-        margin-left: 15px;
-        padding: 10px 15px;
-        color: white;
-        background-color: #4CAF50;
-        font-weight: bold;
-        float: right;
-        font-size: 22px;
-        line-height: 20px;
-        cursor: pointer;
-        transition: 0.3s;
-        }
-        .submitbtn:hover{
-            color: black;
-        }
-        /* Style the close button on hover */
-        .closebtn:hover {
-        color: black;
-        }
+    /* close button  */
+    .closebtn {
+    border-radius: 4px;
+    margin-left: 15px;
+    padding: 10px 15px;
+    color: white;
+    background-color: #4CAF50;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    }
+    /* submit button */
+    .submitbtn{
+    border-radius: 4px;
+    margin-left: 15px;
+    padding: 10px 15px;
+    color: white;
+    background-color: #4CAF50;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    }
+    .submitbtn:hover{
+    color: black;
+    }
+   
+    .closebtn:hover {
+    color: black;
+    }
 
     
         /* transaction display css start  */
@@ -342,11 +242,11 @@
     padding: 10px;
     border-radius: 5px;
     position: fixed;
-    top:120px; /* Adjust the top position as needed */
-    right: 20px; /* Adjust the right position as needed */
-    width: 300px; /* Adjust the width as needed */
+    top:120px; 
+    right: 20px; 
+    width: 300px; 
     height: 78vh; 
-    overflow-y: auto; /* Enable scrolling if needed */
+    overflow-y: auto; 
 }
 
 .transactions-list {
@@ -361,7 +261,7 @@
     border-radius: 3px;
 }
 
-/* Styles for different transaction types */
+/*  different transaction types css */
 
 .transactions-list li.pay-rent {
     background-color: #de1d08;
@@ -444,130 +344,6 @@
     }
 }
 
-/* go buttton css start */
-.go-popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1097f0;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-}
-.go-popup select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-
-        .go-popup button:hover {
-        background-color: #45a049;
-        }
-
-        .go-popup h2 {
-        color: #333;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-        }
-
-        /* community chest css start */
-        .communitychest {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1097f0;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-}
-    .communitychest select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-
-
-        .communitychest button:hover {
-        background-color: #45a049;
-        }
-
-        .communitychest h2 {
-        color: #333;
-        font-size: 1.3em;
-        margin-bottom: 15px;
-        }
-         /* chance  css start */
-         .chance {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1097f0;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-}
-    .chance select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 1em;
-        }
-    
-
-        .chance button:hover {
-        background-color: #45a049;
-        }
-
-        .chance h2 {
-        color: #333;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-        }
-        /* css for community chest or chance message popup */
-        .comchestchancemessage {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1097f0;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-}
-   
-
-        .comchestchancemessage button:hover {
-        background-color: #45a049;
-        }
-
-        .comchestchancemessage h2 {
-        color: #333;
-        font-size: 1.4em;
-        margin-bottom: 15px;
-        }
-
         @media only screen and (min-width: 540px) and (max-width:1490px)  {
             .sidebar {
                 background-color: #bdc3c7;
@@ -643,7 +419,7 @@
                 margin-top: 10px;
                 background-size:30%;
             }
-header {
+        header {
             background-color: #ea3333;
             background-image: url('static/images/landing.png');
             background-size: 30%;
@@ -668,8 +444,8 @@ header {
                 padding: 10px;
                 border-radius: 5px;
                 position: fixed;
-                width: 40%; /* Adjust the width as needed */
-                height: 45%; /* Adjust the height as needed */
+                width: 40%; 
+                height: 45%; 
                 overflow-y: auto;
                 top:50%;
                 left:5px;
@@ -1105,7 +881,7 @@ header {
         const propertyType = document.getElementById('propertyType').value;
         const specificPropertyDropdown = document.getElementById('specificProperty');
 
-        // Clear existing options
+    
         specificPropertyDropdown.innerHTML = '';
 
         
@@ -1127,7 +903,7 @@ header {
         const propertyType = document.getElementById('paypropertyType').value;
         const specificPropertyDropdown = document.getElementById('payspecificProperty');
 
-        // Clear existing options
+        
         specificPropertyDropdown.innerHTML = '';
 
         
@@ -1158,7 +934,7 @@ header {
     function updatebhhPropertyOptions() {
         const propertyType = document.getElementById('bhhpropertyType').value;
         const specificPropertyDropdown = document.getElementById('bhhspecificProperty');
-        // Clear existing options
+        
         specificPropertyDropdown.innerHTML = '';
         for (const site of paysiteOptions) {
             specificPropertyDropdown.innerHTML += `<option value="${site}">${site}</option>`;
@@ -1192,11 +968,10 @@ function payrent() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                  // Show the error alert
+                  
                 alert(data.message);
             } else {
                 alert("RENT PAID SUCCESSFULLY!!")
-                // Reload the page after a successful update
                 location.reload();
             }
         },
@@ -1225,11 +1000,10 @@ function buyProperty() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                  // Show the error alert
+                  
                 alert(data.message);
             }  else {
                 alert('PROPERTY BOUGHT SUCESSFULLY!!');
-                // Reload the page after a successful update
                 location.reload();
             }
         },
@@ -1253,11 +1027,10 @@ function sendPlayerNameToFlask() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                // Show the error alert
+               
                 alert(data.message);
             }  else {
                 alert('SALARY AMOUNT COLLECTED SUCESSFULLY!!');
-                // Reload the page after a successful update
                 location.reload();
             }
         },
@@ -1281,7 +1054,7 @@ function sendchanceplayername() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                // Show the error alert
+                
                 alert(data.message);
             }  else {
                 const title=document.getElementById('ccctitle');
@@ -1312,7 +1085,7 @@ function sendcomchestplayername() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                // Show the error alert
+                
                 alert(data.message);
             }  else {
                 const title=document.getElementById('ccctitle');
@@ -1346,11 +1119,10 @@ function paybank() {
         }),
         success: function (data) {
             if (data.status === 'error' ) {
-                // Show the error alert
+               
                 alert(data.message);
             }  else {
                 alert('AMOUNT PAID SUCESSFULLY!!');
-                // Reload the page after a successful update
                 location.reload();
             }
         },
@@ -1378,11 +1150,9 @@ function  popupbhh(){
         }),
         success: function (data) {
             if (data.status === 'error') {
-                // Handle  error 
                 alert(data.message);
             } else {
                 alert('Construction Successfull!!');
-                // Reload the page after a successful update
                 location.reload();
             }
         },
@@ -1410,11 +1180,9 @@ function rewardbank() {
         success: function (data) {
             if (data.status === 'error' ) {
                 const text="Database error"
-                // Show the  alert
                 alert(text);
             }  else {
                 alert('AMOUNT REWARDED SUCESSFULLY!!');
-                // Reload the page after a successful update
                 location.reload();
             }
         },
