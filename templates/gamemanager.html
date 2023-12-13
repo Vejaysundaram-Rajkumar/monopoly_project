@@ -144,14 +144,7 @@
     font-size: 1em;
     }
 
-.popup button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+
 
 .popup button:hover {
     background-color: #45a049;
@@ -197,15 +190,7 @@
         font-size: 1em;
         }
 
-        .paypopup button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
-
+        
         .paypopup button:hover {
         background-color: #45a049;
         }
@@ -239,15 +224,7 @@
         font-size: 1em;
         }
 
-        .popupbank button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
-
+        
         .popupbank button:hover {
         background-color: #45a049;
         }
@@ -278,15 +255,6 @@
         border-radius: 4px;
         box-sizing: border-box;
         font-size: 1em;
-        }
-
-        .popupreward button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
         }
 
         .popupreward button:hover {
@@ -321,15 +289,6 @@
         font-size: 1em;
         }
 
-        .popupbuildhh button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
-
         .popupbuildhh button:hover {
         background-color: #45a049;
         }
@@ -342,8 +301,11 @@
 
         /* Add a closing button (x) */
         .closebtn {
+        border-radius: 4px;
         margin-left: 15px;
+        padding: 10px 15px;
         color: white;
+        background-color: #4CAF50;
         font-weight: bold;
         float: right;
         font-size: 22px;
@@ -351,35 +313,28 @@
         cursor: pointer;
         transition: 0.3s;
         }
-
+        .submitbtn{
+        border-radius: 4px;
+        margin-left: 15px;
+        padding: 10px 15px;
+        color: white;
+        background-color: #4CAF50;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        }
+        .submitbtn:hover{
+            color: black;
+        }
         /* Style the close button on hover */
         .closebtn:hover {
         color: black;
         }
 
-        .close{
-        position: fixed;
-        left:650px;
-        bottom:20px;
-        }
-        .close1{
-        position: fixed;
-        left:450px;
-        bottom:20px;
-        }.close2{
-        position: fixed;
-        left:450px;
-        bottom:20px;
-        }.close3{
-        position: fixed;
-        left:280px;
-        bottom:20px;
-        }
-        .closeb{
-        position: fixed;
-        left:520px;
-        bottom:20px;
-        }
+    
         /* transaction display css start  */
         .transaction-history {
     background-color: #bdc3c7;
@@ -511,14 +466,6 @@
         box-sizing: border-box;
         font-size: 1em;
         }
-.go-popup  button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
 
         .go-popup button:hover {
         background-color: #45a049;
@@ -552,14 +499,7 @@
         box-sizing: border-box;
         font-size: 1em;
         }
-    .communitychest  button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
+
 
         .communitychest button:hover {
         background-color: #45a049;
@@ -592,14 +532,7 @@
         box-sizing: border-box;
         font-size: 1em;
         }
-    .chance  button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
+    
 
         .chance button:hover {
         background-color: #45a049;
@@ -623,14 +556,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     z-index: 2;
 }
-    .comchestchancemessage  button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        }
+   
 
         .comchestchancemessage button:hover {
         background-color: #45a049;
@@ -944,10 +870,10 @@ header {
                 <!-- Options will be dynamically updated  -->
             </select>
             
-            <button type="button" onclick="buyProperty()">Buy</button>
+            <button type="button" class="submitbtn" onclick="buyProperty()">Buy</button>
             
         </form>
-        <button class="close" onclick="hidePopup()">Cancel</button>
+        <button class="closebtn" onclick="hidePopup()">Cancel</button>
     </div>
     <div id="paypopup" class="paypopup">
         
@@ -975,10 +901,10 @@ header {
             </select>
             <label for="diceRoll" id="diceRollLabel" style="display: none;">Dice Roll:</label>
             <input type="number" id="diceRoll" style="display: none;" min="2" max="12">
-            <button type="button" onclick="payrent()">Pay Rent</button>
+            <button type="button" class="submitbtn" onclick="payrent()">Pay Rent</button>
             
         </form>
-        <button class="close" onclick="hidepayPopup()">Cancel</button>
+        <button class="closebtn" onclick="hidepayPopup()">Cancel</button>
     </div>
     <div id="popupbank" class="popupbank">
         
@@ -995,10 +921,10 @@ header {
             <input type="number" id="amount" name="amount">
                 
             
-            <button type="button" onclick="paybank()">Pay Bank</button>
+            <button type="button" class="submitbtn" onclick="paybank()">Pay Bank</button>
             
         </form>
-        <button class="closeb" onclick="hidepopupbank() ">Cancel</button>
+        <button class="closebtn" onclick="hidepopupbank() ">Cancel</button>
     </div>
     <div id="popupbuildhh" class="popupbuildhh">
         
@@ -1020,10 +946,10 @@ header {
             <select id="bhhspecificProperty" name="bhhspecificProperty">
                 <!-- Options will be dynamically updated  -->
             </select>
-            <button type="button" onclick="popupbhh()">Pay Bank</button>
+            <button type="button" class="submitbtn" onclick="popupbhh()">Pay Bank</button>
             
         </form>
-        <button class="closeb" onclick="hidepopupbhh() ">Cancel</button>
+        <button class="closebtn" onclick="hidepopupbhh() ">Cancel</button>
     </div>
 
     <div id="popupreward" class="popupreward">
@@ -1041,10 +967,10 @@ header {
             <input type="number" id="ramount" name="ramount">
                 
             
-            <button type="button" onclick="rewardbank()">Get Reward</button>
+            <button type="button" class="submitbtn" onclick="rewardbank()">Get Reward</button>
             
         </form>
-        <button class="closeb" onclick="hidepopupreward() ">Cancel</button>
+        <button class="closebtn" onclick="hidepopupreward() ">Cancel</button>
     </div>
     <div id="playerInputPopup" class="go-popup">
         <h2>AS YOU PASS GO COLLECT 2 MILLION AS SALARY</h2>
@@ -1056,8 +982,8 @@ header {
                 <option value="{{ player }}">{{ player }}</option>
             {% endfor %}
         </select>
-        <button type="button" onclick="sendPlayerNameToFlask()">Submit</button>
-        <button class="closeb" onclick="hidePlayerInputPopup()">Cancel</button>
+        <button type="button" class="submitbtn" onclick="sendPlayerNameToFlask()">Submit</button>
+        <button class="closebtn" onclick="hidePlayerInputPopup()">Cancel</button>
     </div>
     <div id="chance" class="chance">
         <h2>Select an player for picking the chance card:</h2>
@@ -1069,8 +995,8 @@ header {
                 <option value="{{ player }}">{{ player }}</option>
             {% endfor %}
         </select>
-        <button type="button" onclick="sendchanceplayername()">Submit</button>
-        <button class="close1" onclick="hidechance()">Cancel</button>
+        <button type="button" class="submitbtn" onclick="sendchanceplayername()">Submit</button>
+        <button class="closebtn" onclick="hidechance()">Cancel</button>
     </div>
     <div id="communitychest" class="communitychest">
         <h2>Select an player for picking the community chest card:</h2>
@@ -1082,14 +1008,14 @@ header {
                 <option value="{{ player }}">{{ player }}</option>
             {% endfor %}
         </select>
-        <button type="button" onclick="sendcomchestplayername()">Submit</button>
-        <button class="close2" onclick="hidecomchest()">Cancel</button>
+        <button type="button" class="submitbtn" onclick="sendcomchestplayername()">Submit</button>
+        <button class="closebtn" onclick="hidecomchest()">Cancel</button>
     </div>
     <div id="comchestchancemessage" class="comchestchancemessage">
         <h2 id="ccctitle"></h2>
         <h4 id="cccmessage"></h4><br>
         <br>
-        <button class="close3" onclick="closecccbox()">Ok</button>
+        <button class="closebtn" onclick="closecccbox()">Ok</button>
     </div>
 
 
