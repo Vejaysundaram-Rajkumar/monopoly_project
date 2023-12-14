@@ -204,7 +204,7 @@
     <script>
         const needle = document.getElementById('needle');
 
-        const variableValue = {{player.netvalue}};
+        const variableValue = 0;
 
         const negativeThreshold = -40;
         const positiveThreshold = 60;
@@ -261,9 +261,9 @@
         // Load google charts for each player
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(() => {
-            {% for player in players_data %}
+            {{% for player in players_data %}}
                 drawCharts('{{ player.name }}', 'piechartsp{{ player.id }}', 'piecharter{{ player.id }}');
-            {% endfor %}
+            {{% endfor %}}
         });
 
         // Function to draw charts for a specific player
@@ -283,8 +283,7 @@
 
             var data2 = google.visualization.arrayToDataTable([
                 ['Task', 'Hours per Day'],
-                ['money gained on properties', {{ player.gained_properties }}],
-                ['money gained on construction', {{ player.gained_construction }}],
+                ['money gained on salary', {{ player.gained_salary }}],
                 ['money gained on rent', {{ player.gained_rent }}],
                 ['other gains', {{ player.other_gains }}]
             ]);

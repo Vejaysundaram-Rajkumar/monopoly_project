@@ -46,8 +46,6 @@ def manager():
             payer_balance=cursor.fetchall()
             player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
             
-            players_data = gamelogiccopy.get_players_data(num_players,player_names)
-
             cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
             cities_list=cursor.fetchall()
             site_names = [name[0] for name in cities_list]
@@ -122,6 +120,21 @@ def endgame():
         error_message="There is no Saved games found in the database!"
         return redirect(url_for('error', status='No Saved Games found!!', message=error_message))
     
+
+@app.route('/statanalysis')
+def statanalysis():
+    try:
+        print("inside")
+        players_data = gamelogiccopy.get_players_data()
+        print(players_data)
+        return render_template('statisticalanalysis.html', players_data=players_data)
+    
+    except:
+        error_message="There error loading the statistics page!"
+        return redirect(url_for('error', status='Try again later!!', message=error_message))
+
+
+
 
 @app.route('/buy_property', methods=['POST'])
 def buy_property():

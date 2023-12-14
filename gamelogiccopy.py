@@ -406,6 +406,7 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     cursor.execute(up2, val3)
                     con.commit()    
                     money_update("spent_rent",payer,util_rent)
+                    money_update("gained_rent",owner[0],util_rent)
                     transaction_func("pay_rent",payer,util_rent,p_type,prop_name,diceno)
                 else:
                     b=-1
@@ -424,6 +425,7 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     cursor.execute(up2, val3)
                     con.commit()
                     money_update("spent_rent",payer,rent_money[0])
+                    money_update("gained_rent",owner[0],rent_money[0])
                     transaction_func("pay_rent",payer,rent_money[0],p_type,prop_name,diceno)    
                 else:
                     b=-1
@@ -452,6 +454,7 @@ def pay_bank_func(payer,amount):
         val2 = (payer_bal, payer)
         cursor.execute(up1, val2)
         con.commit()
+        money_update("other_spendings",payer,amount)
         transaction_func("pay_bank",payer,amount,"","",0)
         b=1
         return b
@@ -475,6 +478,7 @@ def reward_bank_func(player, amount):
     val2 = (payer_bal, player)
     cursor.execute(up1, val2)
     con.commit()
+    money_update("other_gains",player,amount)
     transaction_func("reward",player,amount,"","",0)
     b=1
     return b
@@ -494,6 +498,7 @@ def collect_salary_func(player):
     val2 = (payer_bal, player)
     cursor.execute(up1, val2)
     con.commit()
+    money_update("gained_salary",player,amount)
     transaction_func("salary",player,amount,"","",0)
     b=1
     return b
@@ -554,6 +559,7 @@ def chance_func(player_name,id):
                     ans.append(1)
                     res=statement_func(id)
                     ans.append(res)
+                    money_update("other_spendings",player_name,total_cost)
                     transaction_func("chance",player_name,0,"",res,0)
                     return ans
                 else:
@@ -570,6 +576,7 @@ def chance_func(player_name,id):
                     ans.append(1)
                     res=statement_func(id)
                     ans.append(res)
+                    money_update("other_gains",player_name,amt[0])
                     transaction_func("chance",player_name,0,"",res,0)
                     return ans
                 else:
@@ -586,6 +593,7 @@ def chance_func(player_name,id):
                 ans.append(1)
                 res=statement_func(id)
                 ans.append(res)
+                money_update("other_spendings",player_name,amt[0])
                 transaction_func("chance",player_name,0,"",res,0)
                 return ans
             else:
@@ -612,6 +620,7 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
+            money_update("other_gains",player_name,amt[0])
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:
@@ -630,6 +639,7 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
+            money_update("other_spendings",player_name,total_cost)
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:
@@ -647,6 +657,7 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
+            money_update("other_spendings",player_name,amt[0])
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:
@@ -661,27 +672,26 @@ def community_chest_func(player_name,id):
         return ans
     
 
-def get_players_data(num,player_name):
+def get_players_data():
     con=connect_db()
     cursor=con.cursor()
-    cursor.execute("SELECT DISTINCT game_name FROM players")
-    players_data=[{}]
-    for i in range(num):
+    cursor.execute("SELECT id,name,spent_property,spent_construction,spent_rent,other_spendings,gained_rent,other_gains,gained_salary FROM players")
+    data=cursor.fetchall()
+    players_data=[]
+    for i in data:
         player_data = {
-            'id': i + 1,
-            'name': player_name,
-            'spent_properties': 1400 + i * 100,
-            'spent_construction': 2000 + i * 100,
-            'spent_rent': 3000 + i * 100,
-            'other_spendings': 1000 + i * 100,
-            'gained_properties': 1400 + i * 100,
-            'gained_construction': 2000 + i * 100,
-            'gained_rent': 3000 + i * 100,
-            'other_gains': 1000 + i * 100,
+            'id': i[0],
+            'name': i[1],
+            'spent_properties': i[2],
+            'spent_construction': i[3],
+            'spent_rent': i[4],
+            'other_spendings': i[5],
+            'gained_rent': i[6],
+            'other_gains': i[7],
+            'gained_salary': i[8]
         }
         players_data.append(player_data)
-
-    return None
+    return players_data
 
 #Deleting the created game.
 def deletegame():
@@ -736,9 +746,3 @@ def continuegame():
         b=names[0]
         return b
 
-money_update("other_gains","vejay",10)
-money_update("gained_rent","vejay",10)
-money_update("spent_construction","vejay",10)
-money_update("spent_rent","vejay",10)
-money_update("spent_property","vejay",10)
-money_update("other_spendings","vejay",10)

@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS players (
     spent_rent INTEGER DEFAULT 0,
     other_spendings INTEGER DEFAULT 0,
     gained_rent INTEGER DEFAULT 0,
-    other_gains INTEGER DEFAULT 0
+    other_gains INTEGER DEFAULT 0,
+    gained_salary INTEGER DEFAULT 0
 )
 ''')
 conn.commit()
