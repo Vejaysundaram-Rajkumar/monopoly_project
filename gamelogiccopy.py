@@ -60,6 +60,23 @@ def trains_rent_check():
             cursor.execute("UPDATE trains SET current_rent = 'rent_4T' WHERE Owner = (SELECT name FROM players WHERE id = ?)", (player_id,))
         con.commit()
 
+#updating the money into its brackt of the players for each transactions    
+def money_update(ttype,player,amt):
+    con=connect_db()
+    cursor=con.cursor()
+    #getting the other gained value from the database
+    cursor.execute("SELECT {} FROM players WHERE name = ?".format(ttype), (player,))
+    money_bal=cursor.fetchone()
+    print(money_bal)
+    new_money=money_bal[0]+amt
+    #updating the builder's balance amount into is database
+    up1 = "UPDATE players SET {} = ? WHERE name = ?".format(ttype)
+    val2 = (new_money, player)
+    cursor.execute(up1, val2)
+    con.commit()
+
+
+
 #printing the results of the game 
 def result_func():
     con=connect_db()
@@ -166,6 +183,7 @@ def buy_house_hotel_func(buyer,b_type,prop_name):
                         cursor.execute(up2, val3)
                         con.commit()
                         b=1
+                        money_update("spent_construction",buyer,Hbuild_cost[0])
                         transaction_func("built house",buyer,Hbuild_cost[0],"site",prop_name,0)
                         return b
                     else:
@@ -194,6 +212,7 @@ def buy_house_hotel_func(buyer,b_type,prop_name):
                         cursor.execute(up2, val3)
                         con.commit()
                         b=1
+                        money_update("spent_construction",buyer,Hbuild_cost[0])
                         transaction_func("built hotel",buyer,Hbuild_cost[0],"site",prop_name,0)
                         return b
                     else:
@@ -307,6 +326,7 @@ def building_func(playername,p_type,prop_name):
             val4 = (playername, prop_name)
             cursor.execute(up4, val4)
             con.commit()
+            money_update("spent_property",playername,prop_cost[0])
             transaction_func("buy",playername,prop_cost[0],p_type,prop_name,0)
             if(p_type=="utilities"):
                 utility_rent_check()
@@ -384,7 +404,8 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     up2 = "UPDATE players SET current_money = ? WHERE name = ?"
                     val3 = (o_balance,owner[0])
                     cursor.execute(up2, val3)
-                    con.commit()         
+                    con.commit()    
+                    money_update("spent_rent",payer,util_rent)
                     transaction_func("pay_rent",payer,util_rent,p_type,prop_name,diceno)
                 else:
                     b=-1
@@ -402,6 +423,7 @@ def payingrent_func(payer,p_type,prop_name,diceno):
                     val3 = (o_balance,owner[0])
                     cursor.execute(up2, val3)
                     con.commit()
+                    money_update("spent_rent",payer,rent_money[0])
                     transaction_func("pay_rent",payer,rent_money[0],p_type,prop_name,diceno)    
                 else:
                     b=-1
@@ -456,6 +478,8 @@ def reward_bank_func(player, amount):
     transaction_func("reward",player,amount,"","",0)
     b=1
     return b
+
+
 
 def collect_salary_func(player):
     con=connect_db()
@@ -637,7 +661,27 @@ def community_chest_func(player_name,id):
         return ans
     
 
+def get_players_data(num,player_name):
+    con=connect_db()
+    cursor=con.cursor()
+    cursor.execute("SELECT DISTINCT game_name FROM players")
+    players_data=[{}]
+    for i in range(num):
+        player_data = {
+            'id': i + 1,
+            'name': player_name,
+            'spent_properties': 1400 + i * 100,
+            'spent_construction': 2000 + i * 100,
+            'spent_rent': 3000 + i * 100,
+            'other_spendings': 1000 + i * 100,
+            'gained_properties': 1400 + i * 100,
+            'gained_construction': 2000 + i * 100,
+            'gained_rent': 3000 + i * 100,
+            'other_gains': 1000 + i * 100,
+        }
+        players_data.append(player_data)
 
+    return None
 
 #Deleting the created game.
 def deletegame():
@@ -692,3 +736,9 @@ def continuegame():
         b=names[0]
         return b
 
+money_update("other_gains","vejay",10)
+money_update("gained_rent","vejay",10)
+money_update("spent_construction","vejay",10)
+money_update("spent_rent","vejay",10)
+money_update("spent_property","vejay",10)
+money_update("other_spendings","vejay",10)

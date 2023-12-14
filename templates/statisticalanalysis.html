@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tab.active {
+            background-color: #e0e0e0;
+        }
+
+        .charts-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 20px;
+        }
+
+        .chart {
+            width: 45%;
+            margin-bottom: 20px;
+        }
+
+        .gauge-wrapper {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+
+        .gauge {
+            background: #e7e7e7;
+            box-shadow: 0 -3px 6px 2px rgba(0, 0, 0, 0.50);
+            width: 100%;
+            height: 150px;
+            border-radius: 150px 150px 0 0!important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gauge.min-scaled {
+            transform: scale(0.5);
+        }
+
+        .gauge-center {
+            content: '';
+            color: #fff;
+            width: 60%;
+            height: 60%;
+            background: #15222E;
+            border-radius: 150px 150px 0 0!important;
+            position: absolute;
+            box-shadow: 0 -13px 15px -10px rgba(0, 0, 0, 0.28);
+            right: 21%;
+            bottom: 0;
+            color: #fff;
+            z-index:10;
+        }
+
+        .gauge-center .label, .gauge-center .number {
+            display:block;
+            width: 100%;
+            text-align: center;
+            border:0!important;
+        }
+
+        .gauge-center .label {
+            font-size:0.75em;
+            opacity:0.6;
+            margin:1.1em 0 0.3em 0;
+        }
+
+        .gauge-center .number {
+            font-size:1.2em;
+        }
+
+        .needle {
+            width: 120px;
+            height: 14px;
+            background: #15222E;
+            border-bottom-left-radius: 150%!important;
+            border-bottom-right-radius: 7px!important;
+            border-top-left-radius: 150%!important;
+            border-top-right-radius: 7px!important;
+            position: absolute;
+            bottom: -4px;
+            left: 30px;
+            transform-origin: 100% 8px;
+            transform: rotate(0deg);
+            box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.38);
+            display:none;
+            z-index:9;
+        }
+
+        .four.rischio1 .needle {
+            animation: rotateNeedle 2s 1 both;
+            animation-delay: 1s;
+            display:block;
+        }
+
+        .slice-colors {
+            height:150%;
+        }
+
+        .slice-colors .st {
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border: 75px solid transparent;
+        }
+
+        .four .slice-colors .st.slice-item:nth-child(2) {
+            border-top: 75px  #e67e22 solid;
+            border-right: 75px #e67e22 solid;
+            background-color:#E84C3D;
+        }
+
+        .four .slice-colors .st.slice-item:nth-child(4) {
+            left:50%;
+            border-bottom: 75px #1eaa59 solid;
+            border-right: 75px #1eaa59 solid;
+            background-color:#f1c40f;
+        }
+
+        @keyframes rotateNeedle {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(var(--angle, 0deg));}
+        }
+
+        /* Media queries for responsiveness */
+        @media screen and (max-width: 600px) {
+            .chart {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+  <h1>Player Dashboard</h1>
+
+  <!-- Tabs for each player -->
+  <div class="tabs" id="playerTabs">
+      {% for player in players_data %}
+          <div class="tab" onclick="showPlayer('{{ player.name }}')">{{ player.name }}</div>
+      {% endfor %}
+  </div>
+
+  <!-- Player charts and gauge -->
+  {% for player in players_data %}
+      <div id="{{ player.name }}" class="charts-container" style="display: none;">
+          <div class="chart" id="piechartsp{{ player.id }}"></div>
+          <div class="chart" id="piecharter{{ player.id }}"></div>
+      </div>
+  {% endfor %}
+
+  <!-- Player gauge -->
+  <div class="gauge-wrapper">
+      <div class="gauge four rischio1">
+          <div class="slice-colors">
+              <div class="st slice-item"></div>
+              <div class="st slice-item"></div>
+              <div class="st slice-item"></div>
+              <div class="st slice-item"></div>
+          </div>
+          <div class="needle" id="needle"></div>
+          <div class="gauge-center">
+              <div class="label">STATUS</div>
+              <div class="number"></div>
+          </div>
+      </div>
+  </div>
+
+  <h2>Net Earnings</h2>
+  </body>
+    <script>
+        const needle = document.getElementById('needle');
+
+        const variableValue = {{player.netvalue}};
+
+        const negativeThreshold = -40;
+        const positiveThreshold = 60;
+
+      let angle = 0;
+      if(variableValue < 0) {
+          if (variableValue < negativeThreshold) {
+              angle = 10;
+              document.getElementsByClassName('number')[0].innerText = "OMG :(";
+          } else {
+            if((negativeThreshold-variableValue)>=(variableValue)){
+              angle = 55;
+              document.getElementsByClassName('number')[0].innerText = "Bit worried";
+            }
+            else{
+              angle = 70;
+              document.getElementsByClassName('number')[0].innerText = "Neutral";
+            }
+            } 
+      } else if(variableValue > 0){
+          if (variableValue > positiveThreshold) {
+              angle = 150;
+              document.getElementsByClassName('number')[0].innerText = "Excellent ";
+          } else {
+            if((positiveThreshold-variableValue)<(variableValue)){
+              angle = 125;
+              document.getElementsByClassName('number')[0].innerText = "Going good";
+            }
+            else{
+              angle = 100;
+              document.getElementsByClassName('number')[0].innerText = "Neutral";
+            }
+            } 
+          }
+      else{
+          angle=90;
+          document.getElementsByClassName('label')[0].innerText = variableValue;
+          document.getElementsByClassName('number')[0].innerText = "Neutral";
+      }
+
+      needle.style.setProperty('--angle', `${angle}deg`);
+      function showPlayer(player) {
+            // Hide all player containers
+            document.querySelectorAll('.charts-container').forEach(container => {
+                container.style.display = 'none';
+            });
+
+            // Show the selected player container
+            document.getElementById(player).style.display = 'flex';
+        }
+    </script>
+
+    <script>
+        // Load google charts for each player
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(() => {
+            {% for player in players_data %}
+                drawCharts('{{ player.name }}', 'piechartsp{{ player.id }}', 'piecharter{{ player.id }}');
+            {% endfor %}
+        });
+
+        // Function to draw charts for a specific player
+        function drawCharts(player, chart1, chart2) {
+            var data1 = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['money spent on properties', {{ player.spent_properties }}],
+                ['money spent on construction', {{ player.spent_construction }}],
+                ['money spent on rent', {{ player.spent_rent }}],
+                ['other spendings', {{ player.other_spendings }}]
+            ]);
+
+            var options1 = {'title': `${player}'s spendings`, 'width': 400, 'height': 300};
+
+            var chart1 = new google.visualization.PieChart(document.getElementById(chart1));
+            chart1.draw(data1, options1);
+
+            var data2 = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['money gained on properties', {{ player.gained_properties }}],
+                ['money gained on construction', {{ player.gained_construction }}],
+                ['money gained on rent', {{ player.gained_rent }}],
+                ['other gains', {{ player.other_gains }}]
+            ]);
+
+            var options2 = {'title': `${player}'s Earnings`, 'width': 400, 'height': 300};
+
+            var chart2 = new google.visualization.PieChart(document.getElementById(chart2));
+            chart2.draw(data2, options2);
+        }
+    </script>
+
+
+</html>

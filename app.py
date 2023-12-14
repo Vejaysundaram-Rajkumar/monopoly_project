@@ -46,6 +46,8 @@ def manager():
             payer_balance=cursor.fetchall()
             player_info = [{'name': player, 'amount': locale.currency(amount[0], grouping=True)} for player, amount in zip(player_names, payer_balance)]
             
+            players_data = gamelogiccopy.get_players_data(num_players,player_names)
+
             cursor.execute("SELECT name FROM cities WHERE Owner= ?",("bank",))
             cities_list=cursor.fetchall()
             site_names = [name[0] for name in cities_list]
@@ -119,6 +121,8 @@ def endgame():
     except:
         error_message="There is no Saved games found in the database!"
         return redirect(url_for('error', status='No Saved Games found!!', message=error_message))
+    
+
 @app.route('/buy_property', methods=['POST'])
 def buy_property():
     try:
@@ -186,6 +190,7 @@ def pay_bank():
     except:
         error_message="Some error occured while paying the bank!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
 @app.route('/reward_bank', methods=['POST'])
 def reward_bank():
     try:
@@ -216,6 +221,7 @@ def collectsalary():
     except:
         error_message="Some error occured while transwering your salary!!"
         return redirect(url_for('error', status='Database updation errorr!!', message=error_message))
+
 @app.route('/chance', methods=['POST'])
 def chance():
     try:
