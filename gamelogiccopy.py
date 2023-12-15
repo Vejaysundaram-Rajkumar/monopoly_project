@@ -79,7 +79,7 @@ def money_update(ttype,player,amtt):
 
 
 #printing the results of the game 
-def result_func():
+def result_func(n):
     con=connect_db()
     cursor=con.cursor()
     # Calculate net worth for each player
@@ -116,6 +116,9 @@ def result_func():
 
     # Calculate and print net worth for each player
     net_worths = []
+
+    #total money of the players
+    t=[]
     for player in player_info:
         player_id, player_name, current_money, houses_and_hotels_cost, sites_cost, trains_cost, utilities_cost = player
         net_worth = current_money + houses_and_hotels_cost + sites_cost + trains_cost + utilities_cost
@@ -123,9 +126,13 @@ def result_func():
 
     # Sort players by net worth
     net_worths.sort(key=lambda x: x[2],reverse=True)
-    print(net_worths)
-    return net_worths
-
+    if(n==1):
+        return net_worths
+    elif(n==0):
+        for i in range(len(net_worths)):
+            m=net_worths[i][2]
+            t.append(m)
+        return t
 def buy_house_hotel_func(buyer,b_type,prop_name):
     if(prop_name==""):
         b=-4
@@ -668,12 +675,17 @@ def community_chest_func(player_name,id):
     
 
 def get_players_data():
+    intial_money=9000000
     con=connect_db()
     cursor=con.cursor()
     cursor.execute("SELECT id,name,spent_property,spent_construction,spent_rent,other_spendings,gained_rent,other_gains,gained_salary FROM players")
     data=cursor.fetchall()
     players_data=[]
+    total_money=result_func(0)
+    temp=[]
     for i in data:
+        net=total_money[i[0]-1]-intial_money
+        temp.append(net)
         player_data = {
             'id': i[0],
             'name': i[1],
@@ -683,10 +695,13 @@ def get_players_data():
             'other_spendings': i[5],
             'gained_rent': i[6],
             'other_gains': i[7],
-            'gained_salary': i[8]
+            'gained_salary': i[8],
+            'net_earnings':net
         }
         players_data.append(player_data)
-    return players_data
+    maxval=max(temp)
+    minval=min(temp)
+    return players_data,maxval,minval
 
 #Deleting the created game.
 def deletegame():

@@ -162,6 +162,30 @@
                 width: 100%;
             }
         }
+
+        .option {
+        background-size:30%; 
+        background-position: right; 
+        background-repeat: no-repeat;
+        padding: 20px; 
+        margin: 10px; 
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        height:auto;
+        width:max-content;
+    }
+
+    .option:hover {
+        background-color: #27ae60; 
+        transform: scale(1.05);
+    }
     </style>
 </head>
 <body>
@@ -179,6 +203,8 @@
       <div id="{{ player.name }}" class="charts-container" style="display: none;">
           <div class="chart" id="piechartsp{{ player.id }}"></div>
           <div class="chart" id="piecharter{{ player.id }}"></div>
+          <div class="chart" id="columanchartsp{{ player.id }}"></div>
+          <div class="chart" id="columncharter{{ player.id }}"></div>
       </div>
   {% endfor %}
 
@@ -200,17 +226,34 @@
   </div>
 
   <h2>Net Earnings</h2>
+
+  <!-- Back button -->
+<button class="option" onclick="window.location.href = '/manager'">Back</button>
+
   </body>
     <script>
+        const players_data = {{ play_data | safe }}
+        const rangev = {{ ranges | safe }}
+        const [maxval, minval] = rangev;
+        const thresholdRange = maxval - minval;
+        const negativeThreshold = minval - 0.2 * thresholdRange; 
+        const positiveThreshold = maxval + 0.2 * thresholdRange;
         const needle = document.getElementById('needle');
 
-        const variableValue = 0;
+        function findPlayerByName(name) {
+    for (const player of players_data) {
+        if (player.name === name) {
+            return player.net_earnings;
+        }
+    }
+    return null;  // Return null if player with the given name is not found
+}
 
-        const negativeThreshold = -40;
-        const positiveThreshold = 60;
 
-      let angle = 0;
-      if(variableValue < 0) {
+function meter(variableValue,negativeThreshold,positiveThreshold,needle){
+        console.log(variableValue,negativeThreshold,positiveThreshold);
+        let angle = 0;
+        if(variableValue < 0) {
           if (variableValue < negativeThreshold) {
               angle = 10;
               document.getElementsByClassName('number')[0].innerText = "OMG :(";
@@ -225,6 +268,7 @@
             }
             } 
       } else if(variableValue > 0){
+        console.log("inside right")
           if (variableValue > positiveThreshold) {
               angle = 150;
               document.getElementsByClassName('number')[0].innerText = "Excellent ";
@@ -245,31 +289,33 @@
           document.getElementsByClassName('number')[0].innerText = "Neutral";
       }
 
+      console.log('Final angle:', angle);
       needle.style.setProperty('--angle', `${angle}deg`);
+      
+    }
       function showPlayer(player) {
             // Hide all player containers
             document.querySelectorAll('.charts-container').forEach(container => {
                 container.style.display = 'none';
             });
-
+            const money = findPlayerByName(player);
+            meter(money,negativeThreshold,positiveThreshold,needle);
             // Show the selected player container
             document.getElementById(player).style.display = 'flex';
         }
-    </script>
-<script>
-// Sample player data
-const players_data = {{ play_data | safe }}
+    
 
 // Load google charts for each player
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(function() {
     players_data.forEach(function(player) {
-        drawCharts(player.name, 'piechartsp' + player.id, 'piecharter' + player.id, player.spent_properties, player.spent_construction, player.spent_rent, player.other_spendings, player.gained_salary, player.gained_rent, player.other_gains);
+        drawCharts(player.name, 'piechartsp' + player.id, 'piecharter' + player.id,'columanchartsp' + player.id, 'columncharter' + player.id, player.spent_properties, player.spent_construction, player.spent_rent, player.other_spendings, player.gained_salary, player.gained_rent, player.other_gains);
+        
     });
 });
 
 // Function to draw charts for a specific player
-function drawCharts(player, chart1, chart2, spent_properties, spent_construction, spent_rent, other_spendings, gained_salary, gained_rent, other_gains) {
+function drawCharts(player, chart1, chart2,chart3,chart4, spent_properties, spent_construction, spent_rent, other_spendings, gained_salary, gained_rent, other_gains) {
     var data1 = google.visualization.arrayToDataTable([
         ['Task', 'Amount'],
         ['Money spent on properties', spent_properties],
@@ -278,7 +324,7 @@ function drawCharts(player, chart1, chart2, spent_properties, spent_construction
         ['Other spendings', other_spendings]
     ]);
 
-    var options1 = {'title': player + "'s Spendings", 'width': 400, 'height': 300};
+    var options1 = {'title': player + "'s Spendings", 'width': 900, 'height': 300};
 
     var chart1 = new google.visualization.PieChart(document.getElementById(chart1));
     chart1.draw(data1, options1);
@@ -290,10 +336,16 @@ function drawCharts(player, chart1, chart2, spent_properties, spent_construction
         ['Other gains', other_gains]
     ]);
 
-    var options2 = {'title': player + "'s Earnings", 'width': 400, 'height': 300};
+    var options2 = {'title': player + "'s Earnings", 'width': 700, 'height': 300};
 
     var chart2 = new google.visualization.PieChart(document.getElementById(chart2));
     chart2.draw(data2, options2);
+
+    var chart3 = new google.visualization.ColumnChart(document.getElementById(chart3));
+    chart3.draw(data1, options1);
+
+    var chart4 = new google.visualization.ColumnChart(document.getElementById(chart4));
+    chart4.draw(data2, options2);
 }
 
 </script>

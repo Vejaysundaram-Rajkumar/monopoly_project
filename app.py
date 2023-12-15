@@ -108,7 +108,7 @@ def submit():
 @app.route('/endgame')
 def endgame():
     try:
-        result=gamelogiccopy.result_func()
+        result=gamelogiccopy.result_func(1)
         formatted_result = []
         for i in range(len(result)):
             formatted_value = locale.currency(result[i][2], grouping=True)
@@ -124,9 +124,11 @@ def endgame():
 @app.route('/statanalysis')
 def statanalysis():
     try:
-        players_data = gamelogiccopy.get_players_data()
+        players_data,maxval,minval = gamelogiccopy.get_players_data()
         play_data=json.dumps(players_data)
-        return render_template('statisticalanalysis.html', play_data=play_data,players_data=players_data)
+        d=[maxval,minval]
+        ranges=json.dumps(d)
+        return render_template('statisticalanalysis.html', play_data=play_data,players_data=players_data,ranges=ranges)
     
     except:
         error_message="There error loading the statistics page!"
