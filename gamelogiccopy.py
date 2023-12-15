@@ -61,14 +61,15 @@ def trains_rent_check():
         con.commit()
 
 #updating the money into its brackt of the players for each transactions    
-def money_update(ttype,player,amt):
+def money_update(ttype,player,amtt):
+    print(amtt)
     con=connect_db()
     cursor=con.cursor()
     #getting the other gained value from the database
     cursor.execute("SELECT {} FROM players WHERE name = ?".format(ttype), (player,))
     money_bal=cursor.fetchone()
-    print(money_bal)
-    new_money=money_bal[0]+amt
+    print(money_bal[0])
+    new_money=money_bal[0]+amtt
     #updating the builder's balance amount into is database
     up1 = "UPDATE players SET {} = ? WHERE name = ?".format(ttype)
     val2 = (new_money, player)
@@ -559,7 +560,6 @@ def chance_func(player_name,id):
                     ans.append(1)
                     res=statement_func(id)
                     ans.append(res)
-                    money_update("other_spendings",player_name,total_cost)
                     transaction_func("chance",player_name,0,"",res,0)
                     return ans
                 else:
@@ -576,7 +576,6 @@ def chance_func(player_name,id):
                     ans.append(1)
                     res=statement_func(id)
                     ans.append(res)
-                    money_update("other_gains",player_name,amt[0])
                     transaction_func("chance",player_name,0,"",res,0)
                     return ans
                 else:
@@ -593,7 +592,6 @@ def chance_func(player_name,id):
                 ans.append(1)
                 res=statement_func(id)
                 ans.append(res)
-                money_update("other_spendings",player_name,amt[0])
                 transaction_func("chance",player_name,0,"",res,0)
                 return ans
             else:
@@ -620,7 +618,6 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
-            money_update("other_gains",player_name,amt[0])
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:
@@ -639,7 +636,6 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
-            money_update("other_spendings",player_name,total_cost)
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:
@@ -657,7 +653,6 @@ def community_chest_func(player_name,id):
             ans.append(1)
             res=statement_func(id)
             ans.append(res)
-            money_update("other_spendings",player_name,amt[0])
             transaction_func("communitychest",player_name,0,"",res,0)
             return ans
         else:

@@ -124,10 +124,9 @@ def endgame():
 @app.route('/statanalysis')
 def statanalysis():
     try:
-        print("inside")
         players_data = gamelogiccopy.get_players_data()
-        print(players_data)
-        return render_template('statisticalanalysis.html', players_data=players_data)
+        play_data=json.dumps(players_data)
+        return render_template('statisticalanalysis.html', play_data=play_data,players_data=players_data)
     
     except:
         error_message="There error loading the statistics page!"

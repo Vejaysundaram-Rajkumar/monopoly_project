@@ -256,44 +256,47 @@
             document.getElementById(player).style.display = 'flex';
         }
     </script>
+<script>
+// Sample player data
+const players_data = {{ play_data | safe }}
 
-    <script>
-        // Load google charts for each player
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(() => {
-            {{% for player in players_data %}}
-                drawCharts('{{ player.name }}', 'piechartsp{{ player.id }}', 'piecharter{{ player.id }}');
-            {{% endfor %}}
-        });
+// Load google charts for each player
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(function() {
+    players_data.forEach(function(player) {
+        drawCharts(player.name, 'piechartsp' + player.id, 'piecharter' + player.id, player.spent_properties, player.spent_construction, player.spent_rent, player.other_spendings, player.gained_salary, player.gained_rent, player.other_gains);
+    });
+});
 
-        // Function to draw charts for a specific player
-        function drawCharts(player, chart1, chart2) {
-            var data1 = google.visualization.arrayToDataTable([
-                ['Task', 'Hours per Day'],
-                ['money spent on properties', {{ player.spent_properties }}],
-                ['money spent on construction', {{ player.spent_construction }}],
-                ['money spent on rent', {{ player.spent_rent }}],
-                ['other spendings', {{ player.other_spendings }}]
-            ]);
+// Function to draw charts for a specific player
+function drawCharts(player, chart1, chart2, spent_properties, spent_construction, spent_rent, other_spendings, gained_salary, gained_rent, other_gains) {
+    var data1 = google.visualization.arrayToDataTable([
+        ['Task', 'Amount'],
+        ['Money spent on properties', spent_properties],
+        ['Money spent on construction', spent_construction],
+        ['Money spent on rent', spent_rent],
+        ['Other spendings', other_spendings]
+    ]);
 
-            var options1 = {'title': `${player}'s spendings`, 'width': 400, 'height': 300};
+    var options1 = {'title': player + "'s Spendings", 'width': 400, 'height': 300};
 
-            var chart1 = new google.visualization.PieChart(document.getElementById(chart1));
-            chart1.draw(data1, options1);
+    var chart1 = new google.visualization.PieChart(document.getElementById(chart1));
+    chart1.draw(data1, options1);
 
-            var data2 = google.visualization.arrayToDataTable([
-                ['Task', 'Hours per Day'],
-                ['money gained on salary', {{ player.gained_salary }}],
-                ['money gained on rent', {{ player.gained_rent }}],
-                ['other gains', {{ player.other_gains }}]
-            ]);
+    var data2 = google.visualization.arrayToDataTable([
+        ['Task', 'Amount'],
+        ['Money gained on salary', gained_salary],
+        ['Money gained on rent', gained_rent],
+        ['Other gains', other_gains]
+    ]);
 
-            var options2 = {'title': `${player}'s Earnings`, 'width': 400, 'height': 300};
+    var options2 = {'title': player + "'s Earnings", 'width': 400, 'height': 300};
 
-            var chart2 = new google.visualization.PieChart(document.getElementById(chart2));
-            chart2.draw(data2, options2);
-        }
-    </script>
+    var chart2 = new google.visualization.PieChart(document.getElementById(chart2));
+    chart2.draw(data2, options2);
+}
+
+</script>
 
 
 </html>
